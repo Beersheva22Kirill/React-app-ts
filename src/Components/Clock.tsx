@@ -1,8 +1,9 @@
-import { CSSProperties, useEffect, useState } from "react"
+import { CSSProperties, useEffect, useMemo, useState } from "react"
 import timeZones from "../Services/time-zones"
 
 type Props = {
-    countryOrCity: string
+    countryOrCity: string,
+
 }
 export const Clock: React.FC<Props> = ({countryOrCity}) => {
     const style: CSSProperties = {
@@ -32,7 +33,8 @@ export const Clock: React.FC<Props> = ({countryOrCity}) => {
            setTime(new Date().toLocaleTimeString(undefined,{timeZone:timezone}));                      
         }, 1000 );
     return () => clearInterval(intervalId)
-   }, [])
+   }, [countryOrCity])
+
  
     return <div style={style}>
                 <header>
