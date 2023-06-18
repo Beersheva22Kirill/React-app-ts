@@ -3,7 +3,10 @@ import InputResult from "../../Model/InputResult"
 
 
 type Props = {
-    alertMessage:InputResult;
+    status:string;
+    message:string[];
+
+    //alertMessage:InputResult;
 }
 
 const Alert: React.FC<Props> = (alertMessage) => {
@@ -21,12 +24,12 @@ const Alert: React.FC<Props> = (alertMessage) => {
 
     let color:CSSProperties;
 
-    color = alertMessage.alertMessage.status == "error" ?  {color:'red', fontWeight:"bold" } : {color:'yellow',fontWeight:"bold" }
+    color = alertMessage.status == "error" ?  {color:'red', fontWeight:"bold" } : {color:'yellow',fontWeight:"bold" }
 
     return <div>
-            {alertMessage.alertMessage.status != "success" && 
-                <div style={style_div}><p style={color}>{alertMessage.alertMessage.status}</p>
-                {alertMessage.alertMessage.message.map(str => <p style={style_p}>{str}</p>)}
+            {alertMessage.status != "success" && 
+                <div style={style_div}><p style={color}>{alertMessage.status}</p>
+                {alertMessage.message.map(str => <p style={style_p}>{str}</p>)}
                 </div>} 
            </div>
 }

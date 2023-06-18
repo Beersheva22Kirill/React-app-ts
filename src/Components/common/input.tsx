@@ -11,18 +11,22 @@ type Props ={
 }
 
 const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
+
    const defaultMessage:InputResult = {status:"success",message: []}; 
    const inputElementRef = useRef<HTMLInputElement>(null);
+
    const [disabled, setDisabled] = useState<boolean>(true);
-
-   const [alertMessage,setAlertMessage]= useState<InputResult>(defaultMessage);
-
-
+   const [status,setStatus] = useState<string>(defaultMessage.status) 
+   const [message,setMessage] = useState<string[]>(defaultMessage.message) 
+   
    function onClickFn() {
-        const res = submitFn(inputElementRef.current!.value);
-        setAlertMessage(res);
-        alertMessage.status != "success" && setTimeout(() => {
-          setAlertMessage({status:"success",message: []});
+     const res = submitFn(inputElementRef.current!.value);
+     setStatus(res.status);
+     setMessage(res.message);
+        
+     res.status != "success" && setTimeout(() => {
+          setStatus(defaultMessage.status);
+          setMessage(defaultMessage.message);
         }, 5000)
    }
 
@@ -33,7 +37,7 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
     return <div>
             <input type = {type || "text" } placeholder = {placeHolder} ref={inputElementRef} onChange={onChangeFn}></input>
             <button onClick={onClickFn} disabled = {disabled}>{buttonTitle || 'Go'}</button>
-            {alertMessage.status != "success" && <Alert alertMessage={alertMessage}></Alert>  }
+            {status != "success" && <Alert status={status} message={message}></Alert>  }
            </div>
 }
 
