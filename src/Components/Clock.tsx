@@ -1,22 +1,54 @@
-import { CSSProperties} from "react";
+import { CSSProperties, useEffect, useMemo, useState} from "react";
 import timeZones from '../Services/time-zones';
+import Input from "./common/input";
+import InputResult from "../Model/InputResult";
+
 type Props = {
     time: Date,
     cityCountry: string
 };
 const style: CSSProperties = {display: "flex",
      flexDirection: "column", alignItems: 'center'};
-function getTimeZone(cityCountry: string): string|undefined {
-    const timeZoneObj =
-     timeZones.find(tz => JSON.stringify(tz).includes(cityCountry));
-     return timeZoneObj?.name;
+
+const timeZoneDefault = 'Asia/Jerusalem';
+const countryDefault = 'Israel'
+
+function getTimeZone(cityCountry: string){
+    const timeZoneArr =
+     timeZones.filter(tz => JSON.stringify(tz).includes(cityCountry));
+     return timeZoneArr;
 }
+
+
 export const Clock: React.FC<Props> = ({time, cityCountry}) => {
-    const timeZone: string|undefined = getTimeZone(cityCountry);
-    const title: string = (timeZone && cityCountry) || 'Israel';
-    const timeStr: string = time.toLocaleTimeString(undefined,
-     {timeZone}) 
-     
+
+   
+    const timeZoneStart: string|undefined = useMemo(() => getTimeZone(cityCountry)[0].name,[cityCountry]);
+    const [currentZone,setCurrentZone] = useState(timeZoneStart);
+    const [title, setTitle] = useState(cityCountry)
+    const [timeStr, setTimeStr] = useState(time.toLocaleTimeString(undefined, {timeZone:timeZoneStart}))
+ 
+    useEffect(() => {
+        setTimeStr(time.toLocaleTimeString(undefined, {timeZone:currentZone}))
+    },[time])
+
+    function setTimeZone(inputText: string): InputResult {
+        let res:InputResult = {status:"error", message:['Country or city not found']};
+        const timeZones = getTimeZone(inputText);
+        
+        if(timeZones.length > 0) {
+
+            res = timeZones.length != 1 ? {status:"warning",message:timeZones.map(el => `zone:${el.name}`)} 
+                : {status:"success", message:[`Time of clock changed`]}
+
+            setCurrentZone(timeZones[0].name);
+            setTitle ((timeZones && inputText) || 'Israel');
+            setTimeStr (time.toLocaleTimeString(undefined, {timeZone:timeZones[0].name})); 
+        }
+            
+    return res;
+    }
+    
     
     
 
@@ -25,5 +57,6 @@ export const Clock: React.FC<Props> = ({time, cityCountry}) => {
                 Time in {title}
             </header>
             <p>{timeStr}</p>
+            <Input submitFn={setTimeZone} placeHolder={"Enter country/city"} buttonTitle="Ok"></Input>
     </div>
 }

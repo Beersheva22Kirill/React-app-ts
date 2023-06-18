@@ -3,7 +3,7 @@ import Clocks from "./Components/CLocks";
 const App: React.FC = () => {
 
   return  <div>
-            <Clocks></Clocks>
+           <Clocks></Clocks>
           </div>
 }
 
