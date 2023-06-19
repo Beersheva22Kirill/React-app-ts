@@ -1,6 +1,7 @@
-import {useRef, useState } from "react";
+import {useEffect, useRef, useState } from "react";
 import InputResult from "../../Model/InputResult";
 import Alert from "./Alert";
+import { StatusType } from "../../Model/StatusType";
 
 type Props ={
     submitFn: (inputText:string) => InputResult;
@@ -16,7 +17,7 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
    const inputElementRef = useRef<HTMLInputElement>(null);
 
    const [disabled, setDisabled] = useState<boolean>(true);
-   const [status,setStatus] = useState<string>(defaultMessage.status) 
+   const [status,setStatus] = useState<StatusType>(defaultMessage.status) 
    const [message,setMessage] = useState<string[]>(defaultMessage.message) 
    
    function onClickFn() {
@@ -33,6 +34,10 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
    function onChangeFn(){
         setDisabled(!inputElementRef.current?.value)
    }
+
+//    useEffect(() => {
+//      setDisabled(!inputElementRef.current?.value)
+//    },[inputElementRef.current?.value])
 
     return <div>
             <input type = {type || "text" } placeholder = {placeHolder} ref={inputElementRef} onChange={onChangeFn}></input>

@@ -1,6 +1,7 @@
 import { useState, useEffect, CSSProperties } from "react";
-import ClocksConfig from "../Config/clock-config.json"
+import ClocksConfig from "../../Config/clock-config.json"
 import { Clock } from "./Clock"
+import '../../App.css'
 
 
 const Clocks:React.FC = () => {
@@ -14,16 +15,18 @@ const Clocks:React.FC = () => {
     const [time, setTime] = useState<Date>(new Date())
     useEffect(() => {
         const intervalId = setInterval(() => {
-        setTime(new Date()); 
-        console.log("1");
-           
+        setTime(new Date());            
    }, 1000 );
 
    return () => clearInterval(intervalId)
    }, [])
 
-    return <div style={style}>
+    return <div>
+            <div className="H1-class">My Clocks</div>
+            <div style={style}>
                 {countryes.map(country => <Clock time={time} cityCountry={country}></Clock>)}
            </div>
+        </div>
+    
 }
 export default Clocks

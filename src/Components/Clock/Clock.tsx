@@ -1,7 +1,7 @@
 import { CSSProperties, useEffect, useMemo, useState} from "react";
-import timeZones from '../Services/time-zones';
-import Input from "./common/input";
-import InputResult from "../Model/InputResult";
+import timeZones from '../../Services/time-zones';
+import Input from "../common/Input";
+import InputResult from "../../Model/InputResult";
 
 type Props = {
     time: Date,

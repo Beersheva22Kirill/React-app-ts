@@ -1,9 +1,10 @@
 import { CSSProperties, useEffect, useState } from "react";
 import InputResult from "../../Model/InputResult"
+import { StatusType } from "../../Model/StatusType";
 
 
 type Props = {
-    status:string;
+    status:StatusType;
     message:string[];
 
     //alertMessage:InputResult;
