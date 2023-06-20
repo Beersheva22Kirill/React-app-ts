@@ -1,3 +1,9 @@
 {
-   
+   "matrix":{
+            "width": 50,
+            "heigth": 50
+            },
+            
+    "tick":400
+
 }
