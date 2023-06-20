@@ -9,8 +9,8 @@ const LifeGame: React.FC = () => {
     
     const lifeMatrix = useRef<LifeMatrix>();
     const [numbers, setNumbers] = useState<number[][]>([])
-        //[[0,0,0,0,0],[0,0,0,0,0],[0,1,1,1,0],[0,0,0,0,0],[0,0,0,0,0]] test algoritm
-    const MyMatrix:number[][] =  getRandomMatrix(matrix.width,matrix.heigth, 0, 2)
+        //[[0,0,0,0,0],[0,0,0,0,0],[0,1,1,1,0],[0,0,0,0,0],[0,0,0,0,0]] matrix for test algoritm
+    const MyMatrix:number[][] = getRandomMatrix(matrix.width,matrix.heigth, 0, 2)
 
     function tickFn():void{
         if(!lifeMatrix.current){

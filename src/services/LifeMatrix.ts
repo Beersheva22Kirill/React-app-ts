@@ -21,6 +21,7 @@ export default class LifeMatrix {
             })
 
         });
+
         this._numbers = this._newMatrix.map(row => row.map(cell => cell));
 
         return this._newMatrix
@@ -37,26 +38,26 @@ export default class LifeMatrix {
     }
 
     private getTopNeighbor(indexRow:number,index:number):number{
-       let res:number = 0;
+
        indexRow = indexRow > -1 ? indexRow : this._numbers.length - 1;
-            
-       res += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : this._numbers[indexRow][this._numbers[indexRow].length - 1]
-       res += this._numbers[indexRow][index];
-       res += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : this._numbers[indexRow][0]
          
-       return res;
+       return this.getCountNeighbor(indexRow, index);
     }
 
     
-    private getBottomNeighbor(indexRow:number,index:number):number{
+    private getCountNeighbor( indexRow: number, index: number) {
         let res:number = 0;
-        indexRow = indexRow < this._numbers.length - 1 ? indexRow : 0;
-             
-        res += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : this._numbers[indexRow][this._numbers[indexRow].length - 1]
-        res += this._numbers[indexRow][index];
-        res += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : this._numbers[indexRow][0]
-          
+            res += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : this._numbers[indexRow][this._numbers[indexRow].length - 1];
+            res += this._numbers[indexRow][index];
+            res += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : this._numbers[indexRow][0];
         return res;
+    }
+
+    private getBottomNeighbor(indexRow:number,index:number):number{
+
+        indexRow = indexRow < this._numbers.length - 1 ? indexRow : 0;
+  
+        return this.getCountNeighbor(indexRow, index);
      }
 
      private changeCell(indexRow:number,index:number,countNeighbor:number) {
