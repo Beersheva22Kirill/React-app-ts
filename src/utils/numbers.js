@@ -5,8 +5,13 @@ const names ={
 };
 
 
+export function range(min, max) {
+    return Array.from({length: max - min})
+    .map((__, index) => index + min)
+}
+
 export function getRandomInt(min, max) {
-    if(min == max) {
+    if(min === max) {
         max++;
     } else if (min > max) {
         [min, max] = [max, min]
@@ -21,7 +26,7 @@ export function getRandomElement(array) {
 
 export function getRandomEmployee(minSalary, maxSalary, minYear, maxYear, departments) {
     const gender = getRandomElement(['male', 'female']);
-    const name = getRandomElement(gender == 'female' ? names.femaleNames :
+    const name = getRandomElement(gender === 'female' ? names.femaleNames :
      names.maleNames);
      const birthYear = getRandomInt(minYear, maxYear + 1);
      const salary = getRandomInt(minSalary, maxSalary) * 1000;
@@ -37,4 +42,14 @@ export function getRandomMatrix(rows,columns,min,max){
 
 export function getRandomArrayIntNumbers(nNumbers,min,max){
     return Array.from({length: nNumbers}).map(() => getRandomInt(min,max))
+}
+
+export function arraySum(array){
+
+    return array.length === 0 ? 0 : array.reduce((res,curr) => res + curr);
+}
+
+export function matrixSum( matrix ){
+
+    return matrix.reduce((sum,cur) => sum + arraySum(cur),0)
 }
