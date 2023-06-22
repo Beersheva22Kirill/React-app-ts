@@ -1,4 +1,4 @@
-import { matrixSum, range } from "../utils/numbers";
+import { matrixSum } from "../utils/numbers";
 
 export default class LifeMatrix {
 

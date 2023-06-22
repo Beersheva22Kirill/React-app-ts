@@ -30,8 +30,8 @@ export default class LifeMatrix {
 
     private getAllNeighbor (indexRow:number,index:number):number {
         let count:number = 0;
-        count += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : 0//this._numbers[indexRow][0]
-        count += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : 0//this._numbers[indexRow][this._numbers[indexRow].length - 1]  
+        count += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : this._numbers[indexRow][0]
+        count += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : this._numbers[indexRow][this._numbers[indexRow].length - 1]  
         count += this.getTopNeighbor(indexRow - 1, index);
         count += this.getBottomNeighbor(indexRow + 1, index);
 
@@ -49,9 +49,9 @@ export default class LifeMatrix {
     private getCountNeighbor( indexRow: number, index: number) {
         
         let res:number = 0;
-            res += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : 0//this._numbers[indexRow][this._numbers[indexRow].length - 1];
+            res += this._numbers[indexRow][index - 1] ? this._numbers[indexRow][index - 1] : this._numbers[indexRow][this._numbers[indexRow].length - 1];
             res += this._numbers[indexRow][index];
-            res += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : 0//this._numbers[indexRow][0];
+            res += this._numbers[indexRow][index + 1] ? this._numbers[indexRow][index + 1] : this._numbers[indexRow][0];
        
         return res;
     }
@@ -64,7 +64,7 @@ export default class LifeMatrix {
      }
 
      private changeCell(indexRow:number,index:number,countNeighbor:number) {
-        if(this._numbers[indexRow][index] == 1){
+        if(this._numbers[indexRow][index] === 1){
             this._newMatrix[indexRow][index] = (countNeighbor > 1 && countNeighbor < 4) ? 1 : 0;
         } else {
             this._newMatrix[indexRow][index] = countNeighbor === 3 ? 1 : 0;

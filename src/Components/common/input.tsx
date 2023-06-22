@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState } from "react";
+import {useRef, useState } from "react";
 import InputResult from "../../Model/InputResult";
 import Alert from "./Alert";
 import { StatusType } from "../../Model/StatusType";
@@ -25,7 +25,7 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
      setStatus(res.status);
      setMessage(res.message);
         
-     res.status != "success" && setTimeout(() => {
+     res.status !== "success" && setTimeout(() => {
           setStatus(defaultMessage.status);
           setMessage(defaultMessage.message);
         }, 5000)
@@ -42,7 +42,7 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
     return <div>
             <input type = {type || "text" } placeholder = {placeHolder} ref={inputElementRef} onChange={onChangeFn}></input>
             <button onClick={onClickFn} disabled = {disabled}>{buttonTitle || 'Go'}</button>
-            {status != "success" && <Alert status={status} message={message}></Alert>  }
+            {status !== "success" && <Alert status={status} message={message}></Alert>  }
            </div>
 }
 
