@@ -11,42 +11,38 @@ import NewInputResult from "./Model/NewInputResult";
 import Lifes from "./Components/Lifes";
 import NewInput from "./Components/common/NewInput";
 import InputResult from "./Model/InputResult";
+import { countActions } from "./Redux/Slices/livesCountSlice";
 
-let countLifes:number = 0;
-
-
+let flag: boolean = false;
 
 const App: React.FC = () => {
   const [lifes, setlifes] = useState<ReactNode>()
-
+  const dispatch = useDispatch<any>()
 
   function submitCountLifes(value:string):InputResult {
     const count = Number.parseInt(value)
-    let res:InputResult = {status:"success",
-      message:[``]}
+    let res:InputResult = {status:"success", message:[``]}
       if (count > 0 && count < 5) {
-        countLifes = count;
-        setlifes(<Lifes countMatrix={countLifes}></Lifes>); 
+        flag = true
+        dispatch(countActions.setCount(count))
+        setlifes(<Lifes></Lifes>); 
       } else {
-        res = {status:"error",
-        message:[`count lifes ${count} not correct (1 - 5)`]}
+        res = {status:"error", message:[`count lifes ${count} not correct (1 - 5)`]}
       }
   
     return res
   }
  
-  const dispatch = useDispatch<any>()
-
     useEffect(() => {
         window.addEventListener('resize',() => {
           dispatch(sizeAction.setSize())
           dispatch(directionActions.setDirection())
         })
-    },[countLifes])
+    },[])
 
   return  <div> 
-            {countLifes === 0 && <Input submitFn={submitCountLifes} placeHolder="Enter count lifes" type=""></Input>}  
-            {countLifes > 0 && lifes}     
+            <Input submitFn={submitCountLifes} placeHolder="Enter count lifes" type=""></Input>  
+            {flag  && lifes}     
           </div>
 }
 
