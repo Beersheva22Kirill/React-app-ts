@@ -1,0 +1,62 @@
+{
+    "unauthorized":[
+        {"home":{
+            "navLink":"/Home",
+            "name":"Home"
+        }},
+
+        {"products":{
+            "navLink":"/Products",
+            "name":"Products"
+        }},
+
+        {"signIn":{
+            "navLink":"/SignIn",
+            "name":"SignIn"
+        }} 
+    ],
+
+    "authorized":[
+        {"home":{
+            "navLink":"/Home",
+            "name":"Home"
+        }},
+
+        {"products":{
+            "navLink":"/Products",
+            "name":"Products"
+        }},
+
+        {"shoppingCart":{
+            "navLink":"/ShoppingCart",
+            "name":"ShoppingCart"
+        }},
+
+        {"signOut":{
+            "navLink":"/SignIn",
+            "name":"SignIn"
+        }} 
+    ],
+
+    "admin":[
+        {"home":{
+            "navLink":"/Home",
+            "name":"Home"
+        }},
+
+        {"orders":{
+            "navLink":"/Orders",
+            "name":"Orders"
+        }},
+
+        {"customers":{
+            "navLink":"/Customers",
+            "name":"Customers"
+        }},
+
+        {"signOut":{
+            "navLink":"/SignOut",
+            "name":"SignOut"
+        }} 
+    ]
+}

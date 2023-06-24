@@ -1,12 +1,59 @@
-.app-class{
+.block-of-page{
+display: flex;
+flex-direction: column;  
+align-items: center;
+}
+
+.component-logo {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.navigator-list{
   display: flex;
   flex-direction: column;
-
+  align-items: center;
 }
 
-.H1-class{
+.navigator-item{
+  
+  list-style-type: none;
+    
+}
+
+
+
+.link-item{
+  margin-bottom: 5px;
+  padding: 5px;
+  display: block;
   text-align: center;
-  font-weight: bold;
-  font-size: 2em;
-  margin-bottom: 2vh;
+  padding: px;
+  width: 100%;
+  text-decoration: none;
+  color: black;
+  width: 40vw;
+  border: 1px solid transparent;
+  border-color:black; text-decoration: none;
+  background-color: lightgreen;
 }
+
+.active{
+  background-color: darkgrey;
+  color: darkslategray;
+}
+
+@media(min-width:650px){
+  .navigator-list{
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .link-item{
+    margin: 10px;
+    width: 10vw;
+  
+  }
+}
+

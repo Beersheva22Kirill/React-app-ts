@@ -1,49 +1,40 @@
-import LifeGame from "./Components/LifeGame";
-import example from "./Config/example.json";
-import config from "./Config/config.json"
-import { getRandomMatrix } from "./utils/numbers";
-import { ReactNode, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { sizeAction } from "./Redux/Slices/cellSizeSlice";
-import { directionActions } from "./Redux/Slices/flexDirectionSlice";
-import Input from "./Components/common/Input";
-import NewInputResult from "./Model/NewInputResult";
-import Lifes from "./Components/Lifes";
-import NewInput from "./Components/common/NewInput";
-import InputResult from "./Model/InputResult";
-import { countActions } from "./Redux/Slices/livesCountSlice";
-
-let flag: boolean = false;
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Navigator from "./Components/Navigators/Navigator";
+import Home from "./Components/Pages/Home";
+import Orders from "./Components/Pages/Orders";
+import Products from "./Components/Pages/Products";
+import Customers from "./Components/Pages/Customers";
+import ShoppingCart from "./Components/Pages/ShoppingCart";
+import SignIn from "./Components/Pages/SignIn";
+import SignOut from "./Components/Pages/SignOut";
+import { useSelectorUserState } from "./Redux/store";
+import { useEffect, useState } from "react";
+import "./App.css"
+import { getMenuItem } from "./services/AuthService";
 
 const App: React.FC = () => {
-  const [lifes, setlifes] = useState<ReactNode>()
-  const dispatch = useDispatch<any>()
+  const currentUser = useSelectorUserState()
+  const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser))
 
-  function submitCountLifes(value:string):InputResult {
-    const count = Number.parseInt(value)
-    let res:InputResult = {status:"success", message:[``]}
-      if (count > 0 && count < 5) {
-        flag = true
-        dispatch(countActions.setCount(count))
-        setlifes(<Lifes></Lifes>); 
-      } else {
-        res = {status:"error", message:[`count lifes ${count} not correct (1 - 5)`]}
-      }
-  
-    return res
-  }
+  useEffect(() => {
+    setMenuItems(getMenuItem(currentUser))
+  },[currentUser])
  
-    useEffect(() => {
-        window.addEventListener('resize',() => {
-          dispatch(sizeAction.setSize())
-          dispatch(directionActions.setDirection())
-        })
-    },[])
-
-  return  <div> 
-            <Input submitFn={submitCountLifes} placeHolder="Enter count lifes" type=""></Input>  
-            {flag  && lifes}     
-          </div>
+  return  <BrowserRouter>
+            <Routes>    
+            <Route path ='/' element = {<Navigator navItem={menuItems}></Navigator>}>
+                <Route path="Home" element = {<Home></Home>}/>
+                <Route path="Orders" element = {<Orders></Orders>}/>
+                <Route path="Products" element = {<Products></Products>}/>
+                <Route path="Customers" element = {<Customers></Customers>}/>
+                <Route path="ShoppingCart" element = {<ShoppingCart></ShoppingCart>}/>
+                <Route path="SignIn" element = {<SignIn></SignIn>}/>
+                <Route path="SignOut" element = {<SignOut></SignOut>}/>
+              </Route>
+            </Routes>
+          </BrowserRouter> 
+            
+         
 }
 
 export default App;
