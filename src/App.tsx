@@ -7,12 +7,21 @@ import Customers from "./Components/Pages/Customers";
 import ShoppingCart from "./Components/Pages/ShoppingCart";
 import SignIn from "./Components/Pages/SignIn";
 import SignOut from "./Components/Pages/SignOut";
+import NotFound from "./Components/Pages/NotFound";
 import { useSelectorUserState } from "./Redux/store";
 import { useEffect, useState } from "react";
 import "./App.css"
 import { getMenuItem } from "./services/AuthService";
+import { useDispatch } from "react-redux";
+import { userStateAction } from "./Redux/Slices/autorizedSlice";
 
 const App: React.FC = () => {
+  let userFromLocalStorage = localStorage.getItem('currUser');
+  const dispatch = useDispatch<any>()
+
+  if (userFromLocalStorage) {
+    dispatch(userStateAction.setStatus(userFromLocalStorage))
+  }
   const currentUser = useSelectorUserState()
   const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser))
 
@@ -30,6 +39,7 @@ const App: React.FC = () => {
                 <Route path="ShoppingCart" element = {<ShoppingCart></ShoppingCart>}/>
                 <Route path="SignIn" element = {<SignIn></SignIn>}/>
                 <Route path="SignOut" element = {<SignOut></SignOut>}/>
+                <Route path="/*" element = {<NotFound></NotFound>}></Route>
               </Route>
             </Routes>
           </BrowserRouter> 

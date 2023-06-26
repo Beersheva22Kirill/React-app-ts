@@ -13,6 +13,7 @@ const SignIn:React.FC = () => {
     function submitFn(value:string):InputResult{
         let res:InputResult = {status:"success", message:[``]}
         dispatch(userStateAction.setStatus(value))
+        localStorage.setItem('currUser',value)
         return res;
     }
 

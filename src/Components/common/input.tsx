@@ -35,10 +35,6 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
         setDisabled(!inputElementRef.current?.value)
    }
 
-//    useEffect(() => {
-//      setDisabled(!inputElementRef.current?.value)
-//    },[inputElementRef.current?.value])
-
     return <div>
             <input type = {type || "text" } placeholder = {placeHolder} ref={inputElementRef} onChange={onChangeFn}></input>
             <button onClick={onClickFn} disabled = {disabled}>{buttonTitle || 'Go'}</button>
@@ -47,3 +43,5 @@ const Input :React.FC<Props> = ({submitFn,placeHolder,buttonTitle,type}) => {
 }
 
 export default Input
+
+
