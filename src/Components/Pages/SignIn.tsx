@@ -11,9 +11,13 @@ const SignIn:React.FC = () => {
     const dispatch = useDispatch<any>()
 
     function submitFn(value:string):InputResult{
-        let res:InputResult = {status:"success", message:[``]}
-        dispatch(userStateAction.setStatus(value))
-        localStorage.setItem('currUser',value)
+        let res:InputResult = {status:"success", message:[`success`]}
+
+        setTimeout(() => {
+            dispatch(userStateAction.setStatus(value))
+            localStorage.setItem('currUser',value)
+        },2000)
+        
         return res;
     }
 

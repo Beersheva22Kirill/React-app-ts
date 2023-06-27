@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Navigator from "./Components/Navigators/Navigator";
 import Home from "./Components/Pages/Home";
 import Orders from "./Components/Pages/Orders";
 import Products from "./Components/Pages/Products";
@@ -14,6 +13,7 @@ import "./App.css"
 import { getMenuItem } from "./services/AuthService";
 import { useDispatch } from "react-redux";
 import { userStateAction } from "./Redux/Slices/autorizedSlice";
+import NavigatorDispather from "./Components/Navigators/NavigatorDispather";
 
 const App: React.FC = () => {
   let userFromLocalStorage = localStorage.getItem('currUser');
@@ -31,7 +31,7 @@ const App: React.FC = () => {
  
   return  <BrowserRouter>
             <Routes>    
-            <Route path ='/' element = {<Navigator navItem={menuItems}></Navigator>}>
+            <Route path ='/' element = {<NavigatorDispather navItem={menuItems}/>}>
                 <Route path="Home" element = {<Home></Home>}/>
                 <Route path="Orders" element = {<Orders></Orders>}/>
                 <Route path="Products" element = {<Products></Products>}/>

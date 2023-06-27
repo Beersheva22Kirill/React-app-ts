@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { userStateAction } from "../../Redux/Slices/autorizedSlice";
 import { CSSProperties} from "react";
+import {Button, Box} from "@mui/material";
 
 
 const SignOut:React.FC = () => {
@@ -16,9 +17,9 @@ const SignOut:React.FC = () => {
         localStorage.removeItem('currUser');
     }
    
-    return  <div style={style}>
-                <button  onClick={onClickFn}>confirm sign out</button>
-            </div>
+    return  <Box style={style}>
+                <Button  onClick={onClickFn}>confirm sign out</Button>
+            </Box>
     
     
     
