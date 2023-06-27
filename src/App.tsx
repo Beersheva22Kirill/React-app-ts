@@ -11,22 +11,16 @@ import { useSelectorUserState } from "./Redux/store";
 import { useEffect, useState } from "react";
 import "./App.css"
 import { getMenuItem } from "./services/AuthService";
-import { useDispatch } from "react-redux";
-import { userStateAction } from "./Redux/Slices/autorizedSlice";
 import NavigatorDispather from "./Components/Navigators/NavigatorDispather";
+import UserData from "./Model/UserData";
 
 const App: React.FC = () => {
-  let userFromLocalStorage = localStorage.getItem('currUser');
-  const dispatch = useDispatch<any>()
 
-  if (userFromLocalStorage) {
-    dispatch(userStateAction.setStatus(userFromLocalStorage))
-  }
-  const currentUser = useSelectorUserState()
-  const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser))
+  const currentUser:UserData = useSelectorUserState()
+  const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser.role))
 
   useEffect(() => {
-    setMenuItems(getMenuItem(currentUser))
+    setMenuItems(getMenuItem(currentUser.role))
   },[currentUser])
  
   return  <BrowserRouter>

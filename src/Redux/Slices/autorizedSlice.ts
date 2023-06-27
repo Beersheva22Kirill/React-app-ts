@@ -1,7 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
+import UserData from "../../Model/UserData";
 
-const initialState: {userStatus: string} = {
-    userStatus: "unauthorized"
+const localUser:string|null = localStorage.getItem('localUser');
+const currentUser:UserData = localUser ? JSON.parse(localUser) : {email:"unauthorized",role:"unauthorized"};
+const initialState: {userStatus: UserData} = {
+    
+    userStatus: currentUser
 }
 
 const slice = createSlice({
@@ -9,7 +13,7 @@ const slice = createSlice({
     name:"userStatusState",
     reducers: {
         setStatus: (state,data) => {
-            state.userStatus = data.payload as string;
+            state.userStatus = data.payload as UserData;
         }
     }
 })

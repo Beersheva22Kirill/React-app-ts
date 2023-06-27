@@ -13,8 +13,8 @@ const SignOut:React.FC = () => {
     }
 
     function onClickFn() {
-        dispatch(userStateAction.setStatus('unauthorized'))
-        localStorage.removeItem('currUser');
+        dispatch(userStateAction.setStatus({email:"unauthorized",role:"unauthorized"}))
+        localStorage.removeItem('localUser');
     }
    
     return  <Box style={style}>
