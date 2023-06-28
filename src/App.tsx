@@ -8,7 +8,7 @@ import SignIn from "./Components/Pages/SignIn";
 import SignOut from "./Components/Pages/SignOut";
 import NotFound from "./Components/Pages/NotFound";
 import { useSelectorUserState } from "./Redux/store";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css"
 import { getMenuItem } from "./services/AuthService";
 import NavigatorDispather from "./Components/Navigators/NavigatorDispather";
@@ -17,11 +17,12 @@ import UserData from "./Model/UserData";
 const App: React.FC = () => {
 
   const currentUser:UserData = useSelectorUserState()
-  const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser.role))
+  const menuItems = useMemo(() => getMenuItem(currentUser.role), [currentUser])
+  // const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser.role))
 
-  useEffect(() => {
-    setMenuItems(getMenuItem(currentUser.role))
-  },[currentUser])
+  // useEffect(() => {
+  //   setMenuItems(getMenuItem(currentUser.role))
+  // },[currentUser])
  
   return  <BrowserRouter>
             <Routes>    
