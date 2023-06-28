@@ -18,12 +18,7 @@ const App: React.FC = () => {
 
   const currentUser:UserData = useSelectorUserState()
   const menuItems = useMemo(() => getMenuItem(currentUser.role), [currentUser])
-  // const [menuItems,setMenuItems] = useState<string[][]>(getMenuItem(currentUser.role))
-
-  // useEffect(() => {
-  //   setMenuItems(getMenuItem(currentUser.role))
-  // },[currentUser])
- 
+  
   return  <BrowserRouter>
             <Routes>    
             <Route path ='/' element = {<NavigatorDispather navItem={menuItems}/>}>
