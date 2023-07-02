@@ -1,0 +1,11 @@
+{
+    "age": {
+        "field" : "birthYear",
+        "interval": 10
+    },
+
+    "salary": {
+        "field" : "salary",
+        "interval": 1000
+    }
+}

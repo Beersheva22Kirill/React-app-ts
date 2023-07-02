@@ -1,19 +1,18 @@
 {
     "unauthorized":[
-        ["/Home","Home"],
-        ["/Products","Products"],
         ["/SignIn","SignIn"]],
 
 
     "authorized":[
-        ["/Home","Home"],
-        ["/Products","Products"],
-        ["/ShoppingCart","ShoppingCart"],
+        ["/Employees","Employees table"],
+        ["/statistics/age","Age statistics"],
+        ["/statistics/salary","Salary statistics"],
         ["/SignOut","SignOut"]],
         
     "admin": [
-        ["/Home","Home"],
-        ["/Orders","Orders"],
-        ["/Customers","Customers"],
+        ["/Employees","Employees table"],
+        ["/AddEmployee","Add employee"],
+        ["/statistics/age","Age statistics"],
+        ["/statistics/salary","Salary statistics"],
         ["/SignOut","SignOut"]]
 }

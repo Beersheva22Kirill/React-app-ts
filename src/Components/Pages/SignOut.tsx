@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { userStateAction } from "../../Redux/Slices/autorizedSlice";
 import { CSSProperties} from "react";
 import {Button, Box} from "@mui/material";
-
+import {authService} from "../../Config/service-configuration"
 
 const SignOut:React.FC = () => {
    
@@ -13,8 +13,9 @@ const SignOut:React.FC = () => {
     }
 
     function onClickFn() {
+        authService.logout()
         dispatch(userStateAction.setStatus({email:"unauthorized",role:"unauthorized"}))
-        localStorage.removeItem('localUser');
+       
     }
    
     return  <Box style={style}>
