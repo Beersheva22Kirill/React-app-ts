@@ -1,8 +1,4 @@
 {
-    "unauthorized":[
-        ["/SignIn","SignIn"]],
-
-
     "authorized":[
         ["/Employees","Employees table"],
         ["/statistics/age","Age statistics"],

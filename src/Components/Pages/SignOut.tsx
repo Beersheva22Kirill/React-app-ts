@@ -14,7 +14,7 @@ const SignOut:React.FC = () => {
 
     function onClickFn() {
         authService.logout()
-        dispatch(userStateAction.setStatus({email:"unauthorized",role:"unauthorized"}))
+        dispatch(userStateAction.reset())
        
     }
    

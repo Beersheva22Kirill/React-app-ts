@@ -44,6 +44,12 @@ align-items: center;
   color: darkslategray;
 }
 
+.data-grid-header {
+
+  font-style: italic;
+  font-size: 1.1em;
+}
+
 @media(min-width:650px){
   .navigator-list{
     flex-direction: row;

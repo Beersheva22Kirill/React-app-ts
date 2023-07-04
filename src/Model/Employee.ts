@@ -1,7 +1,9 @@
+import Genders from "./Genders";
+
 type Employee = {
     id?:any,
     name:string,
-    gender: "male"|"female",
+    gender: Genders,
     salary: number,
     department: string,
     birthDate: Date

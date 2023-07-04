@@ -7,44 +7,40 @@ import {employeesService} from "../../Config/service-configuration"
 import {authService} from "../../Config/service-configuration"
 import { useDispatch } from "react-redux";
 import { Alert, Box } from "@mui/material";
-import { useState } from "react";
-import { StatusType } from "../../Model/StatusType";
+
+import { CodePayload } from "../../Model/CodePayload";
+import CodeType from "../../Model/CodeType";
+import { codeAction } from "../../Redux/Slices/codeSlice";
 
 
 const AddEmployee: React.FC = () => {
-    const dispatch = useDispatch<any>()
-    const [statusAdd,setStatusAdd] = useState<StatusType>()
-    const [messageAdd,setMessageAdd] = useState<string>('')
+    const dispatch = useDispatch()
+
 
     async function callbackFn(employee:Employee){
-
+        const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+        
         const response = await employeesService.addEmployee(employee)
-        if(typeof response != 'object'){
-            setStatusAdd("error")
-            setMessageAdd(response)
-            setTimeout(() => {
-                dispatch(userStateAction.setStatus({email:"unauthorized",role:"unauthorized"}))
-                authService.logout()
-            },3000)
-            
+        if(typeof response === 'string'){
+            if(response.includes('Authentification')){
+                codeAlert.code = CodeType.AUTH_ERROR;
+                codeAlert.message = 'Authentification error:' + response
+            } else {
+                codeAlert.code = CodeType.SERVER_ERROR
+                codeAlert.message = "Server error: " + response
+            }
+               
         } else {
-            setStatusAdd("success")
-            setMessageAdd(`Emploee added: id of emploee: ${response.id}`)
-            setTimeout(() => {
-                setMessageAdd('')
-            },5000)
+            codeAlert.message = `Emploee with id: ${response.id} added`
+        
         }
-
-        
-
-
-        
+        dispatch(codeAction.set(codeAlert))
+          
     }
 
     return <Box>
                 <EmployeeForm callback={callbackFn} items={configEmpl.departments}></EmployeeForm>
-                {messageAdd != "" && <Alert severity={statusAdd}>{messageAdd}</Alert>}
-        </Box>
+            </Box>
     
 }
 

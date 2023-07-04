@@ -14,6 +14,9 @@ const slice = createSlice({
     reducers: {
         setStatus: (state,data) => {
             state.userStatus = data.payload as UserData;
+        },
+        reset: (state) => {
+            state.userStatus = {email:"unauthorized",role:"unauthorized"}
         }
     }
 })
