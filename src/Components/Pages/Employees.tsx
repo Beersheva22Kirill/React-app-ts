@@ -1,5 +1,5 @@
 import { Alert, Box, Typography} from "@mui/material"
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Employee from "../../Model/Employee";
 import { authService, employeesService } from "../../Config/service-configuration";
 import {Subscription} from 'rxjs'
@@ -12,7 +12,12 @@ import CodeType from "../../Model/CodeType";
 import { codeAction } from "../../Redux/Slices/codeSlice";
 import { useSelectorUserState } from "../../Redux/store";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import UserData from "../../Model/UserData";
+import Confirmation from "../common/Confirmation";
+import ModalWindow from "../common/ModalWindow";
+import EmployeeForm from "../Forms/EmployeeForm";
+import dayjs from "dayjs";
 
 
 
@@ -21,6 +26,15 @@ const Employees: React.FC = () => {
     
     const dispatch = useDispatch()
     const [employees,setEmployees] = useState<Employee[]>([])
+
+    const [titleConfirm, setTitleConfirm] = useState<string>('')
+    const [contentConfirm, setContentConfirm] = useState<string>('')
+    const [activeConfirmation, setActiveConfirmation] = useState<boolean>(false)
+    const [idCurrEmpl, setIdCurrEmpl] = useState<GridRowId>(0);
+
+    const [activeModalWindow, setActiveModalWindow] = useState<boolean>(false)
+    const [formEmployee, setFormEmployee] = useState<ReactNode>()
+   
     const currentUser = useSelectorUserState();
     const columns: GridColDef[] = getColumns(currentUser)
 
@@ -39,7 +53,8 @@ const Employees: React.FC = () => {
             columns.push({
                 field: 'actions',headerName: 'ACTIONS', type: 'actions',  
                 getActions: (params:GridRowParams) => [
-                    <GridActionsCellItem onClick={() => deleteEmployee(params.id)} icon={<DeleteIcon/>} label="Delete"/>
+                    <GridActionsCellItem onClick={() => {openEditForm(params.id)}} icon={<EditIcon/>} label="Edit"/>,
+                    <GridActionsCellItem onClick={() => openConfirm(params.id)} icon={<DeleteIcon/>} label="Delete"/> 
                 ]
             })
         }
@@ -48,9 +63,38 @@ const Employees: React.FC = () => {
 
     }
 
-    async function deleteEmployee(id:GridRowId){
+    async function openEditForm(id:GridRowId) {
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
-        const response = await employeesService.deleteEmployee(id)
+        const employee:Employee|string = await employeesService.getEmployee(id)
+        if (typeof employee != 'string'){
+            const birtDateJS = dayjs(new Date(employee.birthDate))
+            console.log(birtDateJS)
+            const form:ReactNode = <EmployeeForm 
+                                        defNameValue={employee.name}
+                                        defBirthDate={birtDateJS}
+                                        defGender={employee.gender}
+                                        defSalary={employee.salary}
+                                        defDepartment={employee.department}
+                                        id={id}
+                                        callback={updateEmployee}
+                                        modalClose={setActiveModalWindow}/>
+            setFormEmployee(form);
+            setActiveModalWindow(true);
+        } else {
+            if(employee.includes('Authentification')){
+                codeAlert.code = CodeType.AUTH_ERROR;
+                codeAlert.message = 'Authentification error:' + employee
+            } else {
+                codeAlert.code = CodeType.SERVER_ERROR
+                codeAlert.message = "Server error: " + employee
+            }   
+        }
+        dispatch(codeAction.set(codeAlert))
+    }
+
+    async function updateEmployee(employee:Employee, id:any){
+        const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+        const response = await employeesService.updateEmploee(id,employee)
         if(typeof response === 'string'){
             if(response.includes('Authentification')){
                 codeAlert.code = CodeType.AUTH_ERROR;
@@ -60,7 +104,47 @@ const Employees: React.FC = () => {
                 codeAlert.message = "Server error: " + response
             }   
         } else {
-            codeAlert.message = `Emploee with id: ${id} deleted`
+            codeAlert.message = `Emploee with id: ${id} updated`
+        }
+        dispatch(codeAction.set(codeAlert))
+        console.log(employee);
+
+        
+    }
+
+    async function openConfirm(id:GridRowId){
+        const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+        const employee:Employee|string = await employeesService.getEmployee(id)
+        if(typeof employee != 'string'){
+            setTitleConfirm(`Remove employee ${employee.name} with id: ${employee.id} from table`)
+            setContentConfirm('Recovering is not possible after deleting employee')
+            setIdCurrEmpl(employee.id)
+            setActiveConfirmation(true)
+        } else {
+            if(employee.includes('Authentification')){
+                codeAlert.code = CodeType.AUTH_ERROR;
+                codeAlert.message = 'Authentification error:' + employee
+            } else {
+                codeAlert.code = CodeType.SERVER_ERROR
+                codeAlert.message = "Server error: " + employee
+            }   
+        }
+        dispatch(codeAction.set(codeAlert))
+    }
+
+    async function deleteEmployee(){
+        const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+        const response = await employeesService.deleteEmployee(idCurrEmpl)
+        if(typeof response === 'string'){
+            if(response.includes('Authentification')){
+                codeAlert.code = CodeType.AUTH_ERROR;
+                codeAlert.message = 'Authentification error:' + response
+            } else {
+                codeAlert.code = CodeType.SERVER_ERROR
+                codeAlert.message = "Server error: " + response
+            }   
+        } else {
+            codeAlert.message = `Emploee with id: ${idCurrEmpl} deleted`
         }
         dispatch(codeAction.set(codeAlert))
         
@@ -92,12 +176,16 @@ const Employees: React.FC = () => {
        })
        return () => subscription.unsubscribe();
     },[])
-    return (
-        <Box sx={{ height: "80vh", width: '100vw', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-          <DataGrid style={{width:'80vw'}}
-            rows={employees}
-            columns={columns}/>
+    return (<Box>
+            <ModalWindow active ={activeModalWindow} element = {formEmployee} setActive={setActiveModalWindow}></ModalWindow>
+            <Confirmation callbackAgree={deleteEmployee} active ={activeConfirmation} setActive={setActiveConfirmation} content = {contentConfirm} question = {titleConfirm}></Confirmation>
+                <Box sx={{ height: "80vh", width: '100vw', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+                    <DataGrid style={{width:'80vw'}}
+                        rows={employees}
+                        columns={columns}/>
+                </Box>
         </Box>
+       
       );
 }
 

@@ -1,38 +1,44 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
-import { useState } from 'react';
+import {Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material'
 
 type Props = {
-    //TODO
+    question:string;
+    content:string;
+    active:boolean;
+    setActive:(active: boolean) => void
+    callbackAgree: () => void
 }
 
-const Confirmation:React.FC<Props> = ({}) => {
+const Confirmation:React.FC<Props> = ({content,question,active,setActive, callbackAgree}) => {
     
-    const [open, setOpen] = useState(false);
 
     const handleClose = () => {
-        setOpen(false);
+        setActive(false);
+      };
+
+      const handleAgree= () => {
+        callbackAgree()
+        setActive(false);
       };
 
     return <Dialog
-    open={open}
+    open={active}
     onClose={handleClose}
     aria-labelledby="alert-dialog-title"
     aria-describedby="alert-dialog-description"
   >
     <DialogTitle id="alert-dialog-title">
-      {"Use Google's location service?"}
+      {question}
     </DialogTitle>
     <DialogContent>
       <DialogContentText id="alert-dialog-description">
-        Let Google help apps determine location. This means sending anonymous
-        location data to Google, even when no apps are running.
+        {content}
       </DialogContentText>
     </DialogContent>
     <DialogActions>
       <Button onClick={handleClose}>Disagree</Button>
-      <Button onClick={handleClose} autoFocus>
-        Agree
-      </Button>
+      <Button onClick={handleAgree} autoFocus>Agree</Button>
     </DialogActions>
   </Dialog>
 }
+
+export default Confirmation;

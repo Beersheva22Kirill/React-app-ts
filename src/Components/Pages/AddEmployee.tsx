@@ -39,7 +39,7 @@ const AddEmployee: React.FC = () => {
     }
 
     return <Box>
-                <EmployeeForm callback={callbackFn} items={configEmpl.departments}></EmployeeForm>
+                <EmployeeForm callback={callbackFn}></EmployeeForm>
             </Box>
     
 }
