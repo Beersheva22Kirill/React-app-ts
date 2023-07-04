@@ -6,6 +6,7 @@ import EmployeesService from "./EmployeesService";
 
 
 
+const SERVER_NOT_AVALIABLE = 'Server is unavalible, repeat later';
 export default class EmployeesServeceREST implements EmployeesService{
       
     constructor(private URL:string) {
@@ -22,14 +23,10 @@ export default class EmployeesServeceREST implements EmployeesService{
                 Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`},
             body: JSON.stringify({ ...employee, userId: 'admin' })
         });
-        if(!response.ok) {
-            res = response.status == 401 || response.status == 403 ? `Authentification error` : response.statusText;
-        } else{
-            res = await response.json()
-        }   
+        res = await this.getResponse(response);   
         return res;
         } catch (error) {
-            return 'Server is unavalible, repeat later' 
+            return SERVER_NOT_AVALIABLE 
         }
         
     }
@@ -42,14 +39,10 @@ export default class EmployeesServeceREST implements EmployeesService{
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`}
             });
-            if(!response.ok) {
-                res = response.status == 401 || response.status == 403 ? `Authentification error` : response.statusText;
-            } else{
-                res = await response.json()
-            }   
+            res = await this.getResponse(response);
             return res;
         } catch (error) {
-            return 'Server is unavalible, repeat later'
+            return SERVER_NOT_AVALIABLE
         }
        
     }
@@ -62,12 +55,10 @@ export default class EmployeesServeceREST implements EmployeesService{
             headers: {
                 Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`}
         });
-        if(!response.ok) {
-            res = response.status == 401 || response.status == 403 ? `Authentification error` : response.statusText;
-        }  
+        res = await this.getResponse(response);
         return res;
       } catch (error) {
-        return 'Server is unavalible, repeat later'
+        return SERVER_NOT_AVALIABLE
       }
         
     }
@@ -83,14 +74,10 @@ export default class EmployeesServeceREST implements EmployeesService{
                     Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`},
                 body: JSON.stringify({ ...employee, userId: 'admin' })
             });
-            if (response.ok) {
-                res = await response.json()
-            } else {
-                res = response.status == 401 || response.status == 403 ? `Authentification error` : response.statusText;
-            }
+            res = await this.getResponse(response);
             return res;
                 } catch (error) {
-                    return 'Server is unavalible, repeat later'
+                    return SERVER_NOT_AVALIABLE
                 }        
     } 
 
@@ -111,8 +98,18 @@ export default class EmployeesServeceREST implements EmployeesService{
                     }
                     return res;
                     })
-                .then(data => subscriber.next(data)).catch(error => subscriber.next('Server is unavalible, repeat later'));
+                .then(data => subscriber.next(data)).catch(error => subscriber.next(SERVER_NOT_AVALIABLE));
             }) 
+    }
+
+    private async getResponse(response: Response) {
+        let res;
+        if (!response.ok) {
+            res = response.status == 401 || response.status == 403 ? `Authentification error` : response.statusText;
+        } else {
+            res = await response.json();
+        }
+        return res;
     }
                 
 }
