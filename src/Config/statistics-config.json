@@ -1,11 +1,5 @@
 {
-    "age": {
-        "field" : "birthYear",
-        "interval": 10
-    },
+    "age_intervals": [5,10,20,30,40,50,65],
 
-    "salary": {
-        "field" : "salary",
-        "interval": 1000
-    }
+    "salary_intervals": [5000,10000,20000,30000]
 }

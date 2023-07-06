@@ -44,14 +44,14 @@ const Employees: React.FC = () => {
         const columns: GridColDef[] = [
             { field: 'id', headerName: 'ID', flex: 0.1, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
             { field: 'name', headerName: 'NAME', flex: 0.8, headerClassName: 'data-grid-header', align: 'left', headerAlign: 'center'},
-            { field: 'gender', headerName: 'GENDER' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},
+            { field: 'gender', headerName: 'GENDER' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center', sortable:false},
             { field: 'birthDate', headerName: 'DATE', type: 'date',flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},
             { field: 'salary', headerName: 'SALARY', type: 'number' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
             { field: 'department', headerName: 'DEPARTMENT',flex: 0.5, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},   
         ]
         if(currentUser.role === 'admin') {
             columns.push({
-                field: 'actions',headerName: 'ACTIONS', type: 'actions',  
+                field: 'actions',headerName: '', type: 'actions',flex:0.2,
                 getActions: (params:GridRowParams) => [
                     <GridActionsCellItem onClick={() => {openEditForm(params.id)}} icon={<EditIcon/>} label="Edit"/>,
                     <GridActionsCellItem onClick={() => openConfirm(params.id)} icon={<DeleteIcon/>} label="Delete"/> 

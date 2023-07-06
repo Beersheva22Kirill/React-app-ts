@@ -131,9 +131,9 @@ const EmployeeForm:React.FC<Props> = (props) => {
                 </Box>
                 <Box sx = {{display: 'flex', justifyContent: 'center'}}>
                     <Button type="submit"
-                           
                             variant="contained"
-                            sx={{ mt: 2, mb: 1 }}>Submit</Button>
+                            sx={{ mt: 2, mb: 1 }}>Submit
+                    </Button>
                 </Box>
         </Box>
         
