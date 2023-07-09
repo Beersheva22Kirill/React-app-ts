@@ -4,11 +4,41 @@ import Employee from "../Model/Employee";
 import { AUTH_DATA_JWT } from "./AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
 
-
-
+const POLLER_INTERVAL = 1000;
 const SERVER_NOT_AVALIABLE = 'Server is unavalible, repeat later';
+
+class Cache {
+
+    cacheStr:string = '';
+
+    set(employees:Employee[]):void{
+        this.cacheStr = JSON.stringify(employees);
+    }
+
+    reset():void{
+        this.cacheStr = '';
+    }
+
+    isEqual(employees:Employee[]):boolean{
+
+        return this.cacheStr === JSON.stringify(employees);
+    }
+
+    getChache():Employee[]{
+
+        return !this.isEmpty()  ? JSON.parse(this.cacheStr) : []
+    }
+
+    isEmpty(): boolean {
+        return this.cacheStr.length === 0
+    }
+}
+
 export default class EmployeesServeceREST implements EmployeesService{
       
+    private observable: Observable<Employee[]|string> | null = null;
+    private cache: Cache = new Cache();
+
     constructor(private URL:string) {
 
     }
@@ -82,24 +112,33 @@ export default class EmployeesServeceREST implements EmployeesService{
     } 
 
 
-    getEmployees():Observable<Employee[]|string> {        
-       
-        return new Observable<Employee[]|string>((subscriber) => {
-            fetch(this.URL,{
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT)}`}
-                })
-                .then(response => {
-                    let res:Promise<Employee[]|string>;
-                    if(response.ok){
-                        res = response.json();  
-                    } else {
-                        res = Promise.resolve(response.status == 401 || response.status == 403 ? `Authentification error` : response.statusText);
+    getEmployees():Observable<Employee[]|string> { 
+        this.observable = new Observable<Employee[]|string>((subscriber) => {
+            this.cache.reset()
+            const intervalId = setInterval(()=>{
+                this.getAllEmployees()
+                .then(response => this.getResponse(response))
+                .then(data => {
+                    if(!this.cache.isEqual(data)){
+                        subscriber.next(data);
+                        this.cache.set(data)
                     }
-                    return res;
-                    })
-                .then(data => subscriber.next(data)).catch(error => subscriber.next(SERVER_NOT_AVALIABLE));
-            }) 
+                })
+                .catch(error => subscriber.next(SERVER_NOT_AVALIABLE));
+            },POLLER_INTERVAL)
+        return () => clearInterval(intervalId)   
+        })
+
+        return this.observable
+    }
+
+    private getAllEmployees() {
+        
+        return fetch(this.URL, {
+                headers: {
+                Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT)}`
+            }
+        });
     }
 
     private async getResponse(response: Response) {

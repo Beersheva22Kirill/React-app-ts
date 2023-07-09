@@ -18,7 +18,7 @@ const SalaryStatistics: React.FC = () => {
 
     const [interval, setInterval] = useState<number>(0)
     const [employees,setEmployees] = useState<Employee[]>([])
-    const rows = useMemo(() => getStatistic(),[interval])
+    const rows = useMemo(() => getStatistic(),[interval,employees])
     
 
     const columns: GridColDef[] = [
@@ -50,9 +50,10 @@ const SalaryStatistics: React.FC = () => {
 
 
     useEffect(() => {
-        const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+        
         const subscription:Subscription = employeesService.getEmployees().subscribe({
          next(employeesArr:Employee[]|string) {
+            const codeAlert: CodePayload = {code:CodeType.OK,message:''}
              if (typeof employeesArr === 'string') {
                  if(employeesArr.includes('Authentification')) {
                      codeAlert.code = CodeType.AUTH_ERROR
@@ -65,9 +66,8 @@ const SalaryStatistics: React.FC = () => {
                  }
                  
              } else {
-                 codeAlert.message = 'data loaded into table'
-                 dispatch(codeAction.set(codeAlert))
-                 setEmployees(employeesArr)
+                dispatch(codeAction.set(codeAlert))
+                setEmployees(employeesArr)
              }
                 
          }

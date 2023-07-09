@@ -1,4 +1,4 @@
-import { Box, FormControl, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Typography} from "@mui/material"
+import { Box, FormControl, Grid, InputLabel, MenuItem, Paper, Select, SelectChangeEvent, Typography, useMediaQuery, useTheme} from "@mui/material"
 import { useEffect, useMemo, useState } from "react";
 import config from "../../Config/statistics-config.json"
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
@@ -20,7 +20,7 @@ const AgeStatistics: React.FC = () => {
     const [interval, setInterval] = useState<number>(0)
     const [employees,setEmployees] = useState<Employee[]>([])
     const [dataFOrChart,setDataForChart] = useState<number[][]>([[]])
-    const rows = useMemo(() => getStatistic(),[interval])
+    const rows = useMemo(() => getStatistic(),[interval,employees])
 
 
     const columns: GridColDef[] = [
@@ -81,9 +81,10 @@ const AgeStatistics: React.FC = () => {
 
 
     useEffect(() => {
-        const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+        
         const subscription:Subscription = employeesService.getEmployees().subscribe({
          next(employeesArr:Employee[]|string) {
+            const codeAlert: CodePayload = {code:CodeType.OK,message:''}
              if (typeof employeesArr === 'string') {
                  if(employeesArr.includes('Authentification')) {
                      codeAlert.code = CodeType.AUTH_ERROR
@@ -96,9 +97,8 @@ const AgeStatistics: React.FC = () => {
                  }
                  
              } else {
-                 codeAlert.message = 'data loaded into table'
-                 dispatch(codeAction.set(codeAlert))
-                 setEmployees(employeesArr)
+                dispatch(codeAction.set(codeAlert))
+                setEmployees(employeesArr)
              }
                 
          }
@@ -106,12 +106,19 @@ const AgeStatistics: React.FC = () => {
         return () => subscription.unsubscribe();
      },[])
 
-    return <Box sx={{display:'flex', flexDirection:'column', alignItems:'center'}}>
-            <Typography variant="h3" align="center">Age statistics page</Typography>
-            <Box>
-            <FormControl sx={{marginTop: 1, marginBottom:'2vh'}} fullWidth>
-                    <InputLabel id="demo-simple-select-label">Age interval</InputLabel>
-                        <Select sx={{width:"300px", }}
+    const theme = useTheme();
+    const rotateDisplay = useMediaQuery(theme.breakpoints.between('sm','md'));
+
+    return <Box sx={{display:'flex', flexDirection: 'column', alignItems:'center', marginTop: 0}}>
+            <Box sx={{width: "90vw"}}>
+            <Grid sx={{display:"flex",alignItems:'center'}} container spacing={2} justifyContent="center">
+                <Grid item xs={11} sm = {6}>
+                    <Typography style={{fontSize: rotateDisplay ? '1em' : '2em'}} variant = 'h3' align="center">Age statistics page</Typography>
+                </Grid>
+                <Grid item xs={11} sm = {6} md = {11}>
+                    <FormControl sx={{marginTop: 1, marginBottom:'2vh'}} fullWidth>
+                        <InputLabel id="demo-simple-select-label">Age interval</InputLabel>
+                            <Select sx={{width:"300px", }}
                                     name="age-interval"
                                     labelId="demo-simple-select-label"
                                     id="demo-simple-select"
@@ -119,19 +126,22 @@ const AgeStatistics: React.FC = () => {
                                     defaultValue = ''
                                     onChange={handleChange} required>
                                     {config.age_intervals.map((item:number) => <MenuItem key={item} value={item}>{item}</MenuItem>)}
-                        </Select>
-                </FormControl> 
+                            </Select>
+                    </FormControl>
+                </Grid>
+             
+            </Grid>
+            
             </Box>
-                
-            {interval > 0 && <Grid sx={{marginTop: '3vh', display:"flex",alignItems:'center'}} container spacing={4} justifyContent="center">
-                                    
-                                        <Grid style={{height:'60vh'}} item xs={11} sm = {6}>
+            <Box>
+                {interval > 0 && 
+                                <Grid sx={{marginTop: '2vh',display:"flex",alignItems:'baseline', height:'70vh', overflowY: 'auto'}} container spacing={4} justifyContent="center">  
+                                        <Grid item xs={10} sm = {6}>
                                             <DataGrid columns={columns} rows={rows}></DataGrid>
                                         </Grid>
-                              
-                                    <Grid item xs={11} sm = {6}>
+                                    
+                                    <Grid item xs={10} sm = {6}>
                                         <Paper sx={{
-                                            p: 2,
                                             display: 'flex',
                                             flexDirection: 'column',
                                             height: 240,
@@ -141,6 +151,8 @@ const AgeStatistics: React.FC = () => {
                                     </Grid>
                                 </Grid>}
             </Box>
+            </Box>
+          
 }
 
 export default AgeStatistics;

@@ -1,12 +1,10 @@
-import { Alert, Box, Typography} from "@mui/material"
+import { Box} from "@mui/material"
 import { ReactNode, useEffect, useState } from "react";
 import Employee from "../../Model/Employee";
-import { authService, employeesService } from "../../Config/service-configuration";
+import { employeesService } from "../../Config/service-configuration";
 import {Subscription} from 'rxjs'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRowId, GridRowParams } from '@mui/x-data-grid';
 import { useDispatch } from "react-redux";
-import { userStateAction } from "../../Redux/Slices/autorizedSlice";
-import { StatusType } from "../../Model/StatusType";
 import { CodePayload } from "../../Model/CodePayload";
 import CodeType from "../../Model/CodeType";
 import { codeAction } from "../../Redux/Slices/codeSlice";
@@ -19,10 +17,34 @@ import ModalWindow from "../common/ModalWindow";
 import EmployeeForm from "../Forms/EmployeeForm";
 import dayjs from "dayjs";
 
+function getColumns(currentUser:UserData,columnsAdmin:GridColDef){
+        
+    const columns: GridColDef[] = [
+        { field: 'id', headerName: 'ID', flex: 0.1, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
+        { field: 'name', headerName: 'NAME', flex: 0.8, headerClassName: 'data-grid-header', align: 'left', headerAlign: 'center'},
+        { field: 'gender', headerName: 'GENDER' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center', sortable:false},
+        { field: 'birthDate', headerName: 'DATE', type: 'date',flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},
+        { field: 'salary', headerName: 'SALARY', type: 'number' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
+        { field: 'department', headerName: 'DEPARTMENT',flex: 0.5, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},   
+    ]
+    if(currentUser.role === 'admin') {
+        columns.push(columnsAdmin)
+    }
 
+    return columns
+
+}
 
 
 const Employees: React.FC = () => {
+
+    const columnsAdmin:GridColDef = {
+        field: 'actions',headerName: '', type: 'actions',flex:0.2,
+        getActions: (params:GridRowParams) => [
+            <GridActionsCellItem onClick={() => {openEditForm(params.id)}} icon={<EditIcon/>} label="Edit"/>,
+            <GridActionsCellItem onClick={() => openConfirm(params.id)} icon={<DeleteIcon/>} label="Delete"/> 
+        ]
+    }
     
     const dispatch = useDispatch()
     const [employees,setEmployees] = useState<Employee[]>([])
@@ -36,32 +58,7 @@ const Employees: React.FC = () => {
     const [formEmployee, setFormEmployee] = useState<ReactNode>()
    
     const currentUser = useSelectorUserState();
-    const columns: GridColDef[] = getColumns(currentUser)
-
-
-    function getColumns(currentUser:UserData){
-        
-        const columns: GridColDef[] = [
-            { field: 'id', headerName: 'ID', flex: 0.1, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
-            { field: 'name', headerName: 'NAME', flex: 0.8, headerClassName: 'data-grid-header', align: 'left', headerAlign: 'center'},
-            { field: 'gender', headerName: 'GENDER' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center', sortable:false},
-            { field: 'birthDate', headerName: 'DATE', type: 'date',flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},
-            { field: 'salary', headerName: 'SALARY', type: 'number' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
-            { field: 'department', headerName: 'DEPARTMENT',flex: 0.5, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},   
-        ]
-        if(currentUser.role === 'admin') {
-            columns.push({
-                field: 'actions',headerName: '', type: 'actions',flex:0.2,
-                getActions: (params:GridRowParams) => [
-                    <GridActionsCellItem onClick={() => {openEditForm(params.id)}} icon={<EditIcon/>} label="Edit"/>,
-                    <GridActionsCellItem onClick={() => openConfirm(params.id)} icon={<DeleteIcon/>} label="Delete"/> 
-                ]
-            })
-        }
-    
-        return columns
-
-    }
+    const columns: GridColDef[] = getColumns(currentUser,columnsAdmin)
 
     async function openEditForm(id:GridRowId) {
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
@@ -108,8 +105,6 @@ const Employees: React.FC = () => {
         }
         dispatch(codeAction.set(codeAlert))
         console.log(employee);
-
-        
     }
 
     async function openConfirm(id:GridRowId){
@@ -151,31 +146,29 @@ const Employees: React.FC = () => {
     }
     
     useEffect(() => {
-       const codeAlert: CodePayload = {code:CodeType.OK,message:''}
+       
        const subscription:Subscription = employeesService.getEmployees().subscribe({
         next(employeesArr:Employee[]|string) {
+            const codeAlert: CodePayload = {code:CodeType.OK,message:''}
             if (typeof employeesArr === 'string') {
                 if(employeesArr.includes('Authentification')) {
                     codeAlert.code = CodeType.AUTH_ERROR
                     codeAlert.message = employeesArr
-                    dispatch(codeAction.set(codeAlert))
                 } else {
                     codeAlert.code = CodeType.SERVER_ERROR
-                    codeAlert.message = employeesArr
-                    dispatch(codeAction.set(codeAlert))
+                    codeAlert.message = employeesArr 
                 }
                 
-            } else {
-                codeAlert.message = 'data loaded into table'
-                dispatch(codeAction.set(codeAlert))
+            } else {  
                 setEmployees(employeesArr.map(e => ({...e,birthDate: new Date(e.birthDate)})))
             }
-            
+            dispatch(codeAction.set(codeAlert))
             
         }
        })
        return () => subscription.unsubscribe();
     },[])
+
     return (<Box>
             <ModalWindow active ={activeModalWindow} element = {formEmployee} setActive={setActiveModalWindow}></ModalWindow>
             <Confirmation callbackAgree={deleteEmployee} active ={activeConfirmation} setActive={setActiveConfirmation} content = {contentConfirm} question = {titleConfirm}></Confirmation>
