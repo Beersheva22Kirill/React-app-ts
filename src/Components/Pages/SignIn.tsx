@@ -10,9 +10,6 @@ import CodeType from "../../Model/CodeType";
 import { codeAction } from "../../Redux/Slices/codeSlice";
 
 
-
-
-
 const SignIn:React.FC = () => {
      
     const dispatch = useDispatch<any>()
@@ -23,10 +20,9 @@ const SignIn:React.FC = () => {
         if(userData){
             dispatch(userStateAction.setStatus(userData));
             alertMessage.message = 'Authentification success'
-            
         } else {
             alertMessage.code = CodeType.AUTH_ERROR
-            alertMessage.message = 'Authentification error'
+            alertMessage.message = 'Incorect username or password'
         }
         dispatch(codeAction.set(alertMessage))
                

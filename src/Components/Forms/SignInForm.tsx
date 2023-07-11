@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import LoginData from '../../Model/LoginData';
+import GoogleIcon from '@mui/icons-material/Google';
 import { Alert, Snackbar } from '@mui/material';
 import { StatusType } from '../../Model/StatusType';
 
@@ -30,6 +31,8 @@ function Copyright(props: any) {
 const defaultTheme = createTheme();
 
 const SignInForm:React.FC<{callbackFn:any}> = (callback) => {
+
+    
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -39,7 +42,7 @@ const SignInForm:React.FC<{callbackFn:any}> = (callback) => {
         }
         callback.callbackFn(loginData);
       };
-    
+  
       return (
         <ThemeProvider theme={defaultTheme}>
           <Container component="main" maxWidth="xs">
@@ -78,7 +81,7 @@ const SignInForm:React.FC<{callbackFn:any}> = (callback) => {
                   type="password"
                   id="password"
                   autoComplete="current-password"
-                />
+                />                
                 <Button
                   type="submit"
                   fullWidth
@@ -88,6 +91,13 @@ const SignInForm:React.FC<{callbackFn:any}> = (callback) => {
                   Sign In
                 </Button>
               </Box>
+              <Button
+                  onClick={() => callback.callbackFn({email: 'GOOGLE',password: ''})}
+                  fullWidth
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Google sign In
+                </Button>
             </Box>
             <Copyright sx={{ mt: 8, mb: 4 }} />
           </Container>

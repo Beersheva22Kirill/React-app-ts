@@ -1,11 +1,11 @@
 import { useDispatch } from "react-redux";
-import LoginData from "../Model/LoginData";
-import UserData from "../Model/UserData";
-import AutentificationService  from "./AuthentificationService";
-import { userStateAction } from "../Redux/Slices/autorizedSlice";
+import LoginData from "../../Model/LoginData";
+import UserData from "../../Model/UserData";
+import AuthentificationService  from "./AuthentificationService";
+import { userStateAction } from "../../Redux/Slices/autorizedSlice";
 
 export const AUTH_DATA_JWT = 'auth-data-jwt'
-export default class AuthServiceJwt implements AutentificationService {
+export default class AuthServiceJwt implements AuthentificationService {
     
     constructor(private url: string){
        

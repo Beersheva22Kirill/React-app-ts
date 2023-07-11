@@ -20,12 +20,12 @@ import dayjs from "dayjs";
 function getColumns(currentUser:UserData,columnsAdmin:GridColDef){
         
     const columns: GridColDef[] = [
-        { field: 'id', headerName: 'ID', flex: 0.1, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
-        { field: 'name', headerName: 'NAME', flex: 0.8, headerClassName: 'data-grid-header', align: 'left', headerAlign: 'center'},
+        { field: 'id', headerName: 'ID', flex: 0.2, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
+        { field: 'name', headerName: 'NAME', flex: 0.2, headerClassName: 'data-grid-header', align: 'left', headerAlign: 'center'},
         { field: 'gender', headerName: 'GENDER' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center', sortable:false},
         { field: 'birthDate', headerName: 'DATE', type: 'date',flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},
         { field: 'salary', headerName: 'SALARY', type: 'number' ,flex: 0.3, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center' },
-        { field: 'department', headerName: 'DEPARTMENT',flex: 0.5, headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},   
+        { field: 'department', headerName: 'DEPARTMENT', headerClassName: 'data-grid-header', align: 'center', headerAlign: 'center'},   
     ]
     if(currentUser.role === 'admin') {
         columns.push(columnsAdmin)
@@ -33,6 +33,16 @@ function getColumns(currentUser:UserData,columnsAdmin:GridColDef){
 
     return columns
 
+}
+
+function setErrorMessage(error: any, codeAlert: CodePayload) {
+    if (error.includes('Authentification')) {
+        codeAlert.code = CodeType.AUTH_ERROR;
+        codeAlert.message = 'Authentification error:' + error;
+    } else {
+        codeAlert.code = CodeType.SERVER_ERROR;
+        codeAlert.message = "Server error: " + error;
+    }
 }
 
 
@@ -62,8 +72,8 @@ const Employees: React.FC = () => {
 
     async function openEditForm(id:GridRowId) {
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
-        const employee:Employee|string = await employeesService.getEmployee(id)
-        if (typeof employee != 'string'){
+        try {
+            const employee:Employee = await employeesService.getEmployee(id)
             const birtDateJS = dayjs(new Date(employee.birthDate))
             console.log(birtDateJS)
             const form:ReactNode = <EmployeeForm 
@@ -77,69 +87,45 @@ const Employees: React.FC = () => {
                                         modalClose={setActiveModalWindow}/>
             setFormEmployee(form);
             setActiveModalWindow(true);
-        } else {
-            if(employee.includes('Authentification')){
-                codeAlert.code = CodeType.AUTH_ERROR;
-                codeAlert.message = 'Authentification error:' + employee
-            } else {
-                codeAlert.code = CodeType.SERVER_ERROR
-                codeAlert.message = "Server error: " + employee
-            }   
+        } catch (error:any) {
+            setErrorMessage(error, codeAlert);  
         }
         dispatch(codeAction.set(codeAlert))
     }
 
     async function updateEmployee(employee:Employee, id:any){
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
-        const response = await employeesService.updateEmploee(id,employee)
-        if(typeof response === 'string'){
-            if(response.includes('Authentification')){
-                codeAlert.code = CodeType.AUTH_ERROR;
-                codeAlert.message = 'Authentification error:' + response
-            } else {
-                codeAlert.code = CodeType.SERVER_ERROR
-                codeAlert.message = "Server error: " + response
-            }   
-        } else {
+        try {
+            const response = await employeesService.updateEmploee(id,employee)
             codeAlert.message = `Emploee with id: ${id} updated`
+        } catch (error:any) {
+            setErrorMessage(error, codeAlert);   
         }
         dispatch(codeAction.set(codeAlert))
-        console.log(employee);
+       
     }
 
     async function openConfirm(id:GridRowId){
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
-        const employee:Employee|string = await employeesService.getEmployee(id)
-        if(typeof employee != 'string'){
+        try {
+            const employee:Employee = await employeesService.getEmployee(id)
             setTitleConfirm(`Remove employee ${employee.name} with id: ${employee.id} from table`)
             setContentConfirm('Recovering is not possible after deleting employee')
-            setIdCurrEmpl(employee.id)
+            setIdCurrEmpl(id)
             setActiveConfirmation(true)
-        } else {
-            if(employee.includes('Authentification')){
-                codeAlert.code = CodeType.AUTH_ERROR;
-                codeAlert.message = 'Authentification error:' + employee
-            } else {
-                codeAlert.code = CodeType.SERVER_ERROR
-                codeAlert.message = "Server error: " + employee
-            }   
+        } catch (error:any) {
+            setErrorMessage(error, codeAlert);   
         }
+       
         dispatch(codeAction.set(codeAlert))
     }
 
     async function deleteEmployee(){
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
-        const response = await employeesService.deleteEmployee(idCurrEmpl)
-        if(typeof response === 'string'){
-            if(response.includes('Authentification')){
-                codeAlert.code = CodeType.AUTH_ERROR;
-                codeAlert.message = 'Authentification error:' + response
-            } else {
-                codeAlert.code = CodeType.SERVER_ERROR
-                codeAlert.message = "Server error: " + response
-            }   
-        } else {
-            codeAlert.message = `Emploee with id: ${idCurrEmpl} deleted`
+        try {
+            const response = await employeesService.deleteEmployee(idCurrEmpl)
+        } catch (error:any) {
+            setErrorMessage(error, codeAlert);   
         }
         dispatch(codeAction.set(codeAlert))
         
@@ -173,7 +159,7 @@ const Employees: React.FC = () => {
             <ModalWindow active ={activeModalWindow} element = {formEmployee} setActive={setActiveModalWindow}></ModalWindow>
             <Confirmation callbackAgree={deleteEmployee} active ={activeConfirmation} setActive={setActiveConfirmation} content = {contentConfirm} question = {titleConfirm}></Confirmation>
                 <Box sx={{ height: "80vh", width: '100vw', display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
-                    <DataGrid style={{width:'80vw'}}
+                    <DataGrid style={{width:'90vw'}}
                         rows={employees}
                         columns={columns}/>
                 </Box>
@@ -183,3 +169,5 @@ const Employees: React.FC = () => {
 }
 
 export default Employees;
+
+

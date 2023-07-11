@@ -3,9 +3,9 @@ import SignIn from "./Components/Pages/SignIn";
 import SignOut from "./Components/Pages/SignOut";
 import NotFound from "./Components/Pages/NotFound";
 import { useSelectorCode, useSelectorUserState } from "./Redux/store";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import "./App.css"
-import { getMenuItem } from "./services/AuthService";
+import { getMenuItem } from "./services/AuthFunction";
 import NavigatorDispather from "./Components/Navigators/NavigatorDispather";
 import UserData from "./Model/UserData";
 import Employees from "./Components/Pages/Employees";
@@ -30,16 +30,13 @@ const App: React.FC = () => {
 
   const [alertMessage, severity] = useMemo(() => codeProcessing(),[codeMessage]);
 
-
   function codeProcessing() {
     const res:[string,StatusType] = ['','success']
     res[1] = codeMessage.code  === CodeType.OK ? 'success' : 'error'
     res[0] = codeMessage.message
     if (codeMessage.code === CodeType.AUTH_ERROR) {
-      setTimeout(() => {
         authService.logout()
         dispath(userStateAction.reset())
-      },3000)
     }
     setTimeout(() => {
       dispath(codeAction.reset())

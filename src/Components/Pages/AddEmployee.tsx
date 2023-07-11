@@ -19,21 +19,19 @@ const AddEmployee: React.FC = () => {
 
     async function callbackFn(employee:Employee){
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
-        
-        const response = await employeesService.addEmployee(employee)
-        if(typeof response === 'string'){
-            if(response.includes('Authentification')){
+        try {
+            const response = await employeesService.addEmployee(employee)
+            codeAlert.message = `Employee with id: ${response.id} added`
+        } catch (error:any) {
+            if(error.includes('Authentification')){
                 codeAlert.code = CodeType.AUTH_ERROR;
-                codeAlert.message = 'Authentification error:' + response
+                codeAlert.message = 'Authentification error:' + error
             } else {
                 codeAlert.code = CodeType.SERVER_ERROR
-                codeAlert.message = "Server error: " + response
+                codeAlert.message = "Server error: " + error
             }
-               
-        } else {
-            codeAlert.message = `Emploee with id: ${response.id} added`
-        
         }
+    
         dispatch(codeAction.set(codeAlert))
           
     }

@@ -24,26 +24,24 @@ const Generation: React.FC = () => {
         if (count > 0 && count < 6) {
         const employees:Employee[] = Array.from({length:count}).map(() => getRandomEmployee(config.minSalary,config.maxSalary,config.minYear,config.maxYear,config.departments) )
         for (let index = 0; index < count; index++) {
-            const response = await employeesService.addEmployee(employees[index])
-            if (typeof response === 'string'){
-                if (response.includes('Authentification')){
+            try {
+                const empl = await employeesService.addEmployee(employees[index])
+                codeAlert.message += `employee id:${empl.id} added/`
+            } catch (error:any) {
+                if (error.includes('Authentification')){
                     codeAlert.code = CodeType.AUTH_ERROR;
-                    codeAlert.message = response
+                    codeAlert.message = error
                 } else {
                     codeAlert.code = CodeType.SERVER_ERROR;
-                    codeAlert.message = 'Server error:' + response
+                    codeAlert.message = 'Server error:' + error
                 }
-            } else{
-                codeAlert.message += response.name + ' added /  ' 
-            }
+            }   
         }
 
         } else {
             codeAlert.code = CodeType.UNKNOWN
             codeAlert.message = "Count must be 1 to 5"
-            dispatch(codeAction.set(codeAlert))
         }
-        console.log(codeAlert);
         dispatch(codeAction.set(codeAlert))
         
     }

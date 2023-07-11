@@ -1,7 +1,7 @@
 
 import { Observable } from "rxjs";
-import Employee from "../Model/Employee";
-import { AUTH_DATA_JWT } from "./AuthServiceJwt";
+import Employee from "../../Model/Employee";
+import { AUTH_DATA_JWT } from "../Auth/AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
 
 const POLLER_INTERVAL = 1000;
@@ -61,7 +61,7 @@ export default class EmployeesServeceREST implements EmployeesService{
         
     }
 
-    async getEmployee(id: any): Promise<string | Employee> {
+    async getEmployee(id: any): Promise<Employee> {
         try {
             let res;
             const response = await fetch(this.URL + `/${id}`, {
@@ -72,7 +72,7 @@ export default class EmployeesServeceREST implements EmployeesService{
             res = await this.getResponse(response);
             return res;
         } catch (error) {
-            return SERVER_NOT_AVALIABLE
+            throw SERVER_NOT_AVALIABLE
         }
        
     }
@@ -93,10 +93,10 @@ export default class EmployeesServeceREST implements EmployeesService{
         
     }
 
-    async addEmployee(employee: Employee): Promise<Employee|string> {
+    async addEmployee(employee: Employee): Promise<Employee> {
 
         try {
-            let res:Employee|string;
+            let res:Employee;
             const response = await fetch(this.URL, {
                 method: 'POST',
                 headers: {
@@ -105,10 +105,11 @@ export default class EmployeesServeceREST implements EmployeesService{
                 body: JSON.stringify({ ...employee, userId: 'admin' })
             });
             res = await this.getResponse(response);
-            return res;
+            return res;     
                 } catch (error) {
-                    return SERVER_NOT_AVALIABLE
-                }        
+                    throw SERVER_NOT_AVALIABLE
+                } 
+             
     } 
 
 

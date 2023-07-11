@@ -50,6 +50,10 @@ align-items: center;
   font-size: 1.1em;
 }
 
+.icons-auth:hover{
+  cursor: pointer;
+}
+
 @media(min-width:650px){
   .navigator-list{
     flex-direction: row;
