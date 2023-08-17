@@ -26,8 +26,9 @@ export default class AuthServiceJwt implements AuthentificationService {
             localStorage.setItem(AUTH_DATA_JWT,jwt);
             const jwtPayloadJson = atob(jwt.split('.')[1])
             const userData = JSON.parse(jwtPayloadJson);
-            responseLogin = {email:userData.email,role:userData.sub};
+            responseLogin = {email:userData.sub,role:userData.roles.includes("ADMIN")? "admin" : "user"};
             localStorage.setItem('localUser',JSON.stringify(responseLogin))
+        
         } 
         
         return responseLogin

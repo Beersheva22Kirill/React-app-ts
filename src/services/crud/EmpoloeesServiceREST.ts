@@ -134,10 +134,11 @@ export default class EmployeesServeceREST implements EmployeesService{
     }
 
     private getAllEmployees() {
+        const token = localStorage.getItem(AUTH_DATA_JWT);
         
         return fetch(this.URL, {
                 headers: {
-                Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT)}`
+                Authorization: `Bearer ${token}`
             }
         });
     }

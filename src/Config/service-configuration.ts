@@ -6,15 +6,15 @@ import EmployeesService from "../services/crud/EmployeesService";
 import EmployeesServeceFire from "../services/crud/EmployeesServiceFire";
 import EmployeesServeceREST from "../services/crud/EmpoloeesServiceREST";
 
-// export const authService: AuthService =
-//  new AuthServiceJwt('http://localhost:3500/login')
+export const authService: AuthService =
+ new AuthServiceJwt('http://localhost:8080/login')
 
+
+  export const employeesService: EmployeesService =
+  new EmployeesServeceREST('http://localhost:8080/employees')
+
+//  export const authService: AuthService =
+//  new AuthServiceFire()
 
 //  export const employeesService: EmployeesService =
-//  new EmployeesServeceREST('http://localhost:3500/employees')
-
- export const authService: AuthService =
- new AuthServiceFire()
-
- export const employeesService: EmployeesService =
- new EmployeesServeceFire()
+//  new EmployeesServeceFire()
