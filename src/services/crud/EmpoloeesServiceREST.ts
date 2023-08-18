@@ -3,9 +3,10 @@ import { Observable, Subscriber } from "rxjs";
 import Employee from "../../Model/Employee";
 import { AUTH_DATA_JWT } from "../Auth/AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
+import { SERVER_NOT_AVALIABLE } from "../../Config/service-configuration";
 
 const POLLER_INTERVAL = 1000;
-const SERVER_NOT_AVALIABLE = 'Server is unavalible, repeat later';
+
 
 class Cache {
 
@@ -31,6 +32,20 @@ class Cache {
 
     isEmpty(): boolean {
         return this.cacheStr.length === 0
+    }
+}
+
+async function fetchAllEmployees(url: string):Promise< Employee[]|string> {
+    try {
+        const token = localStorage.getItem(AUTH_DATA_JWT);
+        const response = await fetch(url, {
+            headers: {
+            Authorization: `Bearer ${token}`
+        }
+        });
+        return await response.json()
+    } catch (error) {
+        return SERVER_NOT_AVALIABLE
     }
 }
 
@@ -65,11 +80,12 @@ export default class EmployeesServeceREST implements EmployeesService{
 
     private sibscriberAllNext(subscriber: Subscriber<Employee[] | string>): void {
         
-        this.getAllEmployees().then(response => response.json()).then(employees => {
+        fetchAllEmployees(this.URL).then(employees => {
             if (this.cache.isEmpty() || !this.cache.isEqual(employees as Employee[])) {
                 this.cache.set(employees as Employee[]);
                 subscriber.next(employees);
             }
+            
         })
         .catch(error => subscriber.next(error));
     }
@@ -133,7 +149,6 @@ export default class EmployeesServeceREST implements EmployeesService{
         if (!this.observable) {
             this.observable = new Observable<Employee[] | string>(subscriber => {
                 this.cache.reset();
-
                 this.sibscriberAllNext(subscriber);
                 this.subscriber = subscriber;
                 intervalId = setInterval(() => this.sibscriberAllNext(subscriber), POLLER_INTERVAL);
@@ -143,15 +158,6 @@ export default class EmployeesServeceREST implements EmployeesService{
         return this.observable;
     }
 
-    private getAllEmployees() {
-        const token = localStorage.getItem(AUTH_DATA_JWT);
-        
-        return fetch(this.URL, {
-                headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-    }
 
     private async getResponse(response: Response) {
         let res;

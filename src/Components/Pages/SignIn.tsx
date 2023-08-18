@@ -4,7 +4,7 @@ import { userStateAction } from "../../Redux/Slices/autorizedSlice";
 import SignInForm from "../Forms/SignInForm";
 import LoginData from "../../Model/LoginData";
 import UserData from "../../Model/UserData";
-import {authService} from "../../Config/service-configuration"
+import {SERVER_NOT_AVALIABLE, authService} from "../../Config/service-configuration"
 import { CodePayload } from "../../Model/CodePayload";
 import CodeType from "../../Model/CodeType";
 import { codeAction } from "../../Redux/Slices/codeSlice";
@@ -22,7 +22,7 @@ const SignIn:React.FC = () => {
             alertMessage.message = 'Authentification success'
         } else {
             alertMessage.code = CodeType.AUTH_ERROR
-            alertMessage.message = 'Incorect username or password'
+            alertMessage.message = 'Incorect username or password or ' + SERVER_NOT_AVALIABLE
         }
         dispatch(codeAction.set(alertMessage))
                

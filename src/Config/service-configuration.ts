@@ -6,6 +6,8 @@ import EmployeesService from "../services/crud/EmployeesService";
 import EmployeesServeceFire from "../services/crud/EmployeesServiceFire";
 import EmployeesServeceREST from "../services/crud/EmpoloeesServiceREST";
 
+export const SERVER_NOT_AVALIABLE = 'Server is unavalible, repeat later';
+
 export const authService: AuthService =
  new AuthServiceJwt('http://localhost:8080/login')
 
