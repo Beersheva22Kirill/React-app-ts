@@ -1,5 +1,5 @@
 
-import { Observable } from "rxjs";
+import { Observable, Subscriber } from "rxjs";
 import Employee from "../../Model/Employee";
 import { AUTH_DATA_JWT } from "../Auth/AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
@@ -38,7 +38,8 @@ export default class EmployeesServeceREST implements EmployeesService{
       
     private observable: Observable<Employee[]|string> | null = null;
     private cache: Cache = new Cache();
-
+    private subscriber: Subscriber<string|Employee[]> | undefined;
+    
     constructor(private URL:string) {
 
     }
@@ -53,12 +54,24 @@ export default class EmployeesServeceREST implements EmployeesService{
                 Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`},
             body: JSON.stringify({ ...employee, userId: 'admin' })
         });
-        res = await this.getResponse(response);   
+        res = await this.getResponse(response); 
+        this.sibscriberAllNext(this.subscriber!);  
         return res;
         } catch (error) {
             return SERVER_NOT_AVALIABLE 
         }
         
+    }
+
+    private sibscriberAllNext(subscriber: Subscriber<Employee[] | string>): void {
+        
+        this.getAllEmployees().then(response => response.json()).then(employees => {
+            if (this.cache.isEmpty() || !this.cache.isEqual(employees as Employee[])) {
+                this.cache.set(employees as Employee[]);
+                subscriber.next(employees);
+            }
+        })
+        .catch(error => subscriber.next(error));
     }
 
     async getEmployee(id: any): Promise<Employee> {
@@ -86,6 +99,7 @@ export default class EmployeesServeceREST implements EmployeesService{
                 Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`}
         });
         res = await this.getResponse(response);
+        this.sibscriberAllNext(this.subscriber!); 
         return res;
       } catch (error) {
         return SERVER_NOT_AVALIABLE
@@ -114,23 +128,19 @@ export default class EmployeesServeceREST implements EmployeesService{
 
 
     getEmployees():Observable<Employee[]|string> { 
-        this.observable = new Observable<Employee[]|string>((subscriber) => {
-            this.cache.reset()
-            const intervalId = setInterval(()=>{
-                this.getAllEmployees()
-                .then(response => this.getResponse(response))
-                .then(data => {
-                    if(!this.cache.isEqual(data)){
-                        subscriber.next(data);
-                        this.cache.set(data)
-                    }
-                })
-                .catch(error => subscriber.next(SERVER_NOT_AVALIABLE));
-            },POLLER_INTERVAL)
-        return () => clearInterval(intervalId)   
-        })
 
-        return this.observable
+        let intervalId: any;
+        if (!this.observable) {
+            this.observable = new Observable<Employee[] | string>(subscriber => {
+                this.cache.reset();
+
+                this.sibscriberAllNext(subscriber);
+                this.subscriber = subscriber;
+                intervalId = setInterval(() => this.sibscriberAllNext(subscriber), POLLER_INTERVAL);
+                return () => clearInterval(intervalId)
+            })
+        }
+        return this.observable;
     }
 
     private getAllEmployees() {
