@@ -168,28 +168,8 @@ export default class EmployeesServeceREST implements EmployeesService{
         this.stompClient.connect({},() => {
             this.stompClient.subscribe(TOPIC, message => {
                 console.log("here");
-                
-                if (!this.cash) {
-                    this.sibscriberAllNext(); 
-                } else {
                     console.log(message.body);
-                    const pushMessage:PushMessage = JSON.parse(message.body);
-                    switch (pushMessage.status) {
-                        case "deleted":
-                            this.cash?.delFromCach(pushMessage.employee.id)
-                            break;
-                        case "added":
-                                this.cash?.addToCach(pushMessage.employee)
-                                break;
-                        case "updated":
-                                this.cash?.updateInCash(pushMessage.employee.id,pushMessage.employee)
-                                break;
-                        default:
-                            break;
-                    }
-                    this.subscriber?.next(this.cash?.getCach());
-                }
-                
+                    this.getAction(message);  
             });
         },(error:any) => {
             this.subscriber?.next(JSON.stringify(error))
@@ -197,6 +177,24 @@ export default class EmployeesServeceREST implements EmployeesService{
         }, () => {
             console.log("websocket disconnected");
         })
+    }
+
+    private getAction(message:any) {
+        const pushMessage: PushMessage = JSON.parse(message.body);
+        switch (pushMessage.status) {
+            case "deleted":
+                this.cash?.delFromCach(pushMessage.employee.id);
+                break;
+            case "added":
+                this.cash?.addToCach(pushMessage.employee);
+                break;
+            case "updated":
+                this.cash?.updateInCash(pushMessage.employee.id, pushMessage.employee);
+                break;
+            default:
+                break;
+        }
+        this.subscriber?.next(this.cash?.getCach());
     }
 
     disconectWebSocket(): void {
