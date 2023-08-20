@@ -35,20 +35,6 @@ class Cache {
     }
 }
 
-async function fetchAllEmployees(url: string):Promise< Employee[]|string> {
-    try {
-        const token = localStorage.getItem(AUTH_DATA_JWT);
-        const response = await fetch(url, {
-            headers: {
-            Authorization: `Bearer ${token}`
-        }
-        });
-        return await response.json()
-    } catch (error) {
-        return SERVER_NOT_AVALIABLE
-    }
-}
-
 export default class EmployeesServeceREST implements EmployeesService{
       
     private observable: Observable<Employee[]|string> | null = null;
@@ -57,6 +43,20 @@ export default class EmployeesServeceREST implements EmployeesService{
     
     constructor(private URL:string) {
 
+    }
+
+     private async fetchAllEmployees(url: string):Promise< Employee[]|string> {
+        try {
+            const token = localStorage.getItem(AUTH_DATA_JWT);
+            const response = await fetch(url, {
+                headers: {
+                Authorization: `Bearer ${token}`
+            }
+            });
+            return this.getResponse(response);
+        } catch (error) {
+            return SERVER_NOT_AVALIABLE
+        }
     }
 
     async updateEmploee(id:any, employee: Employee): Promise<Employee|string> {
@@ -80,7 +80,7 @@ export default class EmployeesServeceREST implements EmployeesService{
 
     private sibscriberAllNext(subscriber: Subscriber<Employee[] | string>): void {
         
-        fetchAllEmployees(this.URL).then(employees => {
+        this.fetchAllEmployees(this.URL).then(employees => {
             if (this.cache.isEmpty() || !this.cache.isEqual(employees as Employee[])) {
                 this.cache.set(employees as Employee[]);
                 subscriber.next(employees);
