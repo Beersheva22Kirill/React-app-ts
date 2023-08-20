@@ -5,6 +5,38 @@ import { AUTH_DATA_JWT } from "../Auth/AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
 import { SERVER_NOT_AVALIABLE } from "../../Config/service-configuration";
 import { CompatClient, Stomp } from "@stomp/stompjs";
+import Employees from "../../Components/Pages/Employees";
+import { PushMessage } from "../../Model/PushMessage";
+import { EmptyObject } from "redux";
+
+class Cach {
+
+    cashMap = new Map<any,Employee>();
+
+    addToCach(employee:Employee){
+        this.cashMap.set(employee.id, employee);
+    }
+
+    delFromCach(id:any){
+        this.cashMap.delete(id);
+    }
+
+    updateInCash(id:any, employee:Employee){
+        this.cashMap.set(employee.id, employee);
+    }
+
+    addAllToCach(employees:Employee[]){
+        employees.forEach(employee => this.addToCach(employee))
+    }
+
+    getCach():Employee[]{
+        const array:Employee[]=[];
+        this.cashMap.forEach(emploee => array.push(emploee))
+        
+        return array;
+    }
+
+}
 
 const TOPIC = "/topic/employees"
 export default class EmployeesServeceREST implements EmployeesService{
@@ -14,12 +46,14 @@ export default class EmployeesServeceREST implements EmployeesService{
     private urlService:string;
     private urlWebSocket:string;
     private stompClient: CompatClient;
+    private cash:Cach;
 
     
     constructor(baseUrl:string) {
         this.urlService = `http://${baseUrl}/employees`;
         this.urlWebSocket = `ws://${baseUrl}/websocket/employees`;
         this.stompClient = Stomp.client(this.urlWebSocket);
+        this.cash = new Cach();
     }
 
      private async fetchAllEmployees():Promise< Employee[]|string> {
@@ -57,7 +91,10 @@ export default class EmployeesServeceREST implements EmployeesService{
     private sibscriberAllNext(): void {
         
         this.fetchAllEmployees().then(employees => {
-            this.subscriber?.next(employees);     
+            if ( typeof employees != "string") {
+                this.cash?.addAllToCach(employees)
+            }
+            this.subscriber?.next(this.cash?.getCach());     
         })
         .catch(error => this.subscriber?.next(error));
     }
@@ -130,8 +167,29 @@ export default class EmployeesServeceREST implements EmployeesService{
     connectWebSocket() {
         this.stompClient.connect({},() => {
             this.stompClient.subscribe(TOPIC, message => {
-                console.log(message.body);
-                this.sibscriberAllNext();
+                console.log("here");
+                
+                if (!this.cash) {
+                    this.sibscriberAllNext(); 
+                } else {
+                    console.log(message.body);
+                    const pushMessage:PushMessage = JSON.parse(message.body);
+                    switch (pushMessage.status) {
+                        case "deleted":
+                            this.cash?.delFromCach(pushMessage.employee.id)
+                            break;
+                        case "added":
+                                this.cash?.addToCach(pushMessage.employee)
+                                break;
+                        case "updated":
+                                this.cash?.updateInCash(pushMessage.employee.id,pushMessage.employee)
+                                break;
+                        default:
+                            break;
+                    }
+                    this.subscriber?.next(this.cash?.getCach());
+                }
+                
             });
         },(error:any) => {
             this.subscriber?.next(JSON.stringify(error))
