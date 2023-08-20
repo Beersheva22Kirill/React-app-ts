@@ -26,6 +26,9 @@ const Generation: React.FC = () => {
         for (let index = 0; index < count; index++) {
             try {
                 const empl = await employeesService.addEmployee(employees[index])
+                if(typeof empl == "string"){
+                    throw empl;
+                }
                 codeAlert.message += `employee id:${empl.id} added/`
             } catch (error:any) {
                 if (error.includes('Authentification')){

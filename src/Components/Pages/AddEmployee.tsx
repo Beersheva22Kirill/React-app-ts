@@ -21,10 +21,10 @@ const AddEmployee: React.FC = () => {
         const codeAlert: CodePayload = {code:CodeType.OK,message:''}
         try {
             const response = await employeesService.addEmployee(employee)
-
-            codeAlert.message = `Employee with id: ${response.id} added`
-            
-            
+            if(typeof response == "string"){
+                throw response;
+            }
+            codeAlert.message = `Employee with id: ${response.id} added`     
         } catch (error:any) {
             if(error.includes('Authentification')){
                 codeAlert.code = CodeType.AUTH_ERROR;
