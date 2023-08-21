@@ -30,10 +30,8 @@ class Cach {
     }
 
     getCach():Employee[]{
-        const array:Employee[]=[];
-        this.cashMap.forEach(emploee => array.push(emploee))
         
-        return array;
+        return Array.from(this.cashMap.values());
     }
 
 }
