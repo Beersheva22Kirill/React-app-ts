@@ -132,7 +132,7 @@ export default class EmployeesServeceREST implements EmployeesService{
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${localStorage.getItem(AUTH_DATA_JWT) || ''}`},
-                body: JSON.stringify({ ...employee, userId: 'admin' })
+                body: JSON.stringify(employee)
             });
             res = await this.getResponse(response);
             return res;     
