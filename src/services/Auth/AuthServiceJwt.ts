@@ -15,7 +15,7 @@ export default class AuthServiceJwt implements AuthentificationService {
     async login(loginData:LoginData): Promise<UserData|null> {
         let responseLogin:UserData|null = null    
             try {
-                const response = await fetch(this.url,{
+                const response = await fetch(this.url + '/login',{
                     method:"POST",
                     headers: {
                         'Content-Type': 'application/json'
@@ -34,6 +34,7 @@ export default class AuthServiceJwt implements AuthentificationService {
                 
                 } 
             } catch (error) {
+               console.log(error);
                
             } finally{
                 return responseLogin

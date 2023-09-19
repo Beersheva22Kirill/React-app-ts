@@ -9,11 +9,11 @@ import EmployeesServeceREST from "../services/crud/EmpoloeesServiceREST";
 export const SERVER_NOT_AVALIABLE = 'Server is unavalible, repeat later';
 
 export const authService: AuthService =
- new AuthServiceJwt('http://localhost:8080/login')
+ new AuthServiceJwt('http://localhost:3500/users')
 
 
   export const employeesService: EmployeesService =
-  new EmployeesServeceREST('http://localhost:8080/employees')
+  new EmployeesServeceREST('http://localhost:3500/employees')
 
 //  export const authService: AuthService =
 //  new AuthServiceFire()
