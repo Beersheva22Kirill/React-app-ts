@@ -13,7 +13,7 @@ export const authService: AuthService =
 
 
   export const employeesService: EmployeesService =
-  new EmployeesServeceREST('localhost:3500')
+  new EmployeesServeceREST('localhost:3500/employees')
 
 //  export const authService: AuthService =
 //  new AuthServiceFire()

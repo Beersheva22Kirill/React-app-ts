@@ -4,7 +4,6 @@ import Employee from "../../Model/Employee";
 import { AUTH_DATA_JWT } from "../Auth/AuthServiceJwt";
 import EmployeesService from "./EmployeesService";
 import { SERVER_NOT_AVALIABLE } from "../../Config/service-configuration";
-import { CompatClient, Stomp } from "@stomp/stompjs";
 import Employees from "../../Components/Pages/Employees";
 import { PushMessage } from "../../Model/PushMessage";
 import { EmptyObject } from "redux";
@@ -36,21 +35,19 @@ class Cach {
 
 }
 
-const TOPIC = "/topic/employees"
 export default class EmployeesServeceREST implements EmployeesService{
       
     private observable: Observable<Employee[]|string> | null = null;
     private subscriber: Subscriber<string|Employee[]> | undefined;
     private urlService:string;
     private urlWebSocket:string;
-    private stompClient: CompatClient;
+    private webSocket: WebSocket | undefined;
     private cash:Cach;
 
     
     constructor(baseUrl:string) {
-        this.urlService = `http://${baseUrl}/employees`;
-        this.urlWebSocket = `ws://${baseUrl}/websocket/employees`;
-        this.stompClient = Stomp.client(this.urlWebSocket);
+        this.urlService = `http://${baseUrl}`;
+        this.urlWebSocket = `ws://${baseUrl}/websocket`;
         this.cash = new Cach();
     }
 
@@ -156,6 +153,7 @@ export default class EmployeesServeceREST implements EmployeesService{
                 this.subscriber = subscriber;
                 this.sibscriberAllNext();
                 this.connectWebSocket();
+                
                 return () => this.disconectWebSocket();
             })
         }
@@ -163,18 +161,13 @@ export default class EmployeesServeceREST implements EmployeesService{
     }
 
     connectWebSocket() {
-        this.stompClient.connect({},() => {
-            this.stompClient.subscribe(TOPIC, message => {
-                console.log("here");
-                    console.log(message.body);
-                    this.getAction(message);  
-            });
-        },(error:any) => {
-            this.subscriber?.next(JSON.stringify(error))
-            console.log(error);
-        }, () => {
-            console.log("websocket disconnected");
-        })
+        this.webSocket = new WebSocket(this.urlWebSocket, localStorage.getItem(AUTH_DATA_JWT) || '');
+        
+        this.webSocket.onmessage = message => {
+            console.log(message.data);
+            this.sibscriberAllNext();  
+        }
+      
     }
 
     private getAction(message:any) {
@@ -196,7 +189,7 @@ export default class EmployeesServeceREST implements EmployeesService{
     }
 
     disconectWebSocket(): void {
-        this.stompClient.disconnect();
+        this.webSocket?.close();
     }
     
 
